@@ -1,0 +1,11 @@
+Project organizer
+
+This project aims to set up an uniform way to manage multiple
+projects, trying to support many different SCMs and modalities.
+
+
+* TODO take from mr.developer or write from scratch some code to abstract the SCM used
+
+* TODO define a grammar/syntax for a configuration file format
+
+* TODO write doc in RST format
