@@ -8,5 +8,5 @@ version = '0.1'
 setup(name=package,
       version=version,
       description="organize multiple projects",
-      author='Andrea Crotti', author_email='andrea.crotti.0@gmail.com',
+      author='Andrea Crotti', author_email='andrea.crotti.0@gmail.com'
     )
