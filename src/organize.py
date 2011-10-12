@@ -1,7 +1,14 @@
+#!/usr/bin/env python2
 """
 1. read and validate the configuration
 2. parse arguments to see what should be done
 3. report nicely some results
+
+Some good information to show
+- last time updated
+- last time modified
+- time spent on if possible
+- differences between original and cloned repository
 """
 import argparse
 import logging
@@ -23,6 +30,16 @@ class Profile(object):
     pass
 
 
+class Project(object):
+    pass
+
+
+class Conf(object):
+    # the conf is just a list of projects
+    def __init__(self):
+        pass
+
+
 def load_configuration():
     val = Validator()
     config = ConfigObj(DEFAULT_CONF, configspec=DEFAULT_SPEC)
@@ -30,6 +47,10 @@ def load_configuration():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Entry point to manage projects')
+
+    parser.add_argument('-l', '--list',
+                        action='store_true',
+                        help='list all the projects')
 
     parser.add_argument('-c', '--config',
                         help='additional configuration')
