@@ -7,6 +7,7 @@ import argparse
 import logging
 
 from configobj import ConfigObj
+from glob import glob
 from sys import argv
 from validate import Validator
 
@@ -14,6 +15,7 @@ logger = logging.getLogger('organizer')
 
 DEFAULT_CONF = 'projects.ini'
 DEFAULT_SPEC = 'projects.spec'
+
 
 class Profile(object):
     """A profile declares some extra options which might come handy
@@ -36,3 +38,5 @@ if __name__ == '__main__':
                         metavar='PROJECT',
                         nargs='+',
                         help='which projects to run the command')
+
+    ns = parser.parse_args(argv[1:])
