@@ -15,5 +15,4 @@ class TestShellCommands(unittest.TestCase):
         self.sh_commander = ShellCommandRunner('ldfs')
         self.sh_commander.run('dslkfj')
         # is it really a good idea to create a FSM for this thing
-        if self.sh_commander.state == 'over':
-            self.assertEqual(self.sh_commander.failed)
+        self.assertTrue(self.sh_commander.failed)

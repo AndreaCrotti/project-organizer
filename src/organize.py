@@ -57,18 +57,18 @@ class ShellCommandRunner(object):
     #might have to be threat in the same way
     def run(self, relative_cwd=None):
         #TODO: what should be the type of relative_cwd, is that os-dependent or not?
-        self.proc = Popen(self._format_cmd(),
-                          cwd=relative_cwd, stderr=PIPE, stdout=PIPE, shell=True)
-            # communicate also waits for the end of the process
         try:
+            self.proc = Popen(self._format_cmd(),
+                              cwd=relative_cwd, stderr=PIPE, stdout=PIPE, shell=True)
+            # communicate also waits for the end of the process
             out, err = self.proc.communicate()
         except Exception:
-            pass
-
-        if self.proc.returncode != 0:
             self.failed = True
-
-        #TODO: raise some sort of exception to explain clearly what happened
+        # FIXME: make this more robust and reliable, maybe we should
+        # also return True or False depending if it's correctly done
+        else:
+            if self.proc.returncode != 0:
+                self.failed = True
 
 
 class Profile(object):

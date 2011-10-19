@@ -13,6 +13,9 @@ projects, trying to support many different SCMs and modalities.
 Every project can be a separate entity, but sharing configurations and
 general rules with many other projects.
 
+In case there is an original project of our personal fork, we should
+be able to see detailed diffs and statistics about it.
+
 * Emacs integration
   Switching to project should be done withing Emacs (calling shell
   commands) too with the following:
