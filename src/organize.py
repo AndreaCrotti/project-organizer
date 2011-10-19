@@ -77,6 +77,26 @@ class Profile(object):
     pass
 
 
+class BugTracker(Profile):
+    pass
+
+
+class SCM(Profile):
+    pass
+
+
+class Git(SCM):
+    pass
+
+
+class SVN(SCM):
+    pass
+
+
+class GitSVN(SCM):
+    pass
+
+
 class Project(object):
     pass
 
