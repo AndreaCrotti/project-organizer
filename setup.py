@@ -21,6 +21,7 @@ setup(
     version=version,
     packages=find_packages(),
     description="organize multiple projects",
+    test_suite='test.test_organizer',
     author='Andrea Crotti',
     author_email='andrea.crotti.0@gmail.com',
     scripts=['src/organize.py']

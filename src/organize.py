@@ -4,6 +4,7 @@ TODO:
 1. read and validate the configuration
 2. parse arguments to see what should be done
 3. report nicely some results
+4. check if possible to create a DB of programs and their usual positions
 
 Some good information to show
 - last time updated
@@ -32,15 +33,42 @@ class ShellCommandRunner(object):
     This class is in charge of executing shell commands, capture
     output and so on
     """
-    def __init__(self, cmd, args):
+    def __init__(self, cmd, args=None):
         # cmd might have to be validated or found in the system in the
         # path, and this should be done in a OS-independent way
         self.cmd = cmd
-        self.args = args
+        if args:
+            self.args = args
+        else:
+            self.args = []
 
+        self.failed = False
+
+    @classmethod
+    def _resolve(cls, cmd):
+        #TODO: use a way to resolve the path which avoids running with
+        #shell=True which doesn't give enough control on the given machine
+        return cmd
+
+    def _format_cmd(self):
+        return "%s %s" % (self._resolve(self.cmd), ' '.join(self.args))
+
+    #TODO: at the moment the exception and the erroneous return code
+    #might have to be threat in the same way
     def run(self, relative_cwd=None):
-        if relative_cwd:
+        #TODO: what should be the type of relative_cwd, is that os-dependent or not?
+        self.proc = Popen(self._format_cmd(),
+                          cwd=relative_cwd, stderr=PIPE, stdout=PIPE, shell=True)
+            # communicate also waits for the end of the process
+        try:
+            out, err = self.proc.communicate()
+        except Exception:
             pass
+
+        if self.proc.returncode != 0:
+            self.failed = True
+
+        #TODO: raise some sort of exception to explain clearly what happened
 
 
 class Profile(object):
