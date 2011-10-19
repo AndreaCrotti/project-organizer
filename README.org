@@ -9,3 +9,14 @@ projects, trying to support many different SCMs and modalities.
 * TODO define a grammar/syntax for a configuration file format
 
 * TODO write doc in RST format
+
+Every project can be a separate entity, but sharing configurations and
+general rules with many other projects.
+
+* Emacs integration
+  Switching to project should be done withing Emacs (calling shell
+  commands) too with the following:
+  - always store buffers and window configurations used
+  - restore buffers (maybe in new frames) and window configurations
+  - show and analyse the time spent in each of the projects
+    (possibly using org-mode and its advanced timing mechanisms)
