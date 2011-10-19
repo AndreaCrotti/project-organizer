@@ -87,10 +87,13 @@ class Conf(object):
         pass
 
 
-def load_configuration():
+def load_configuration(config_file):
     val = Validator()
-    config = ConfigObj(DEFAULT_CONF, configspec=DEFAULT_SPEC)
-    print config.validate(val)
+    config = ConfigObj(config_file, configspec=DEFAULT_SPEC)
+    ret = config.validate(val)
+    print(ret)
+    return ret
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Entry point to manage projects')
@@ -100,6 +103,7 @@ if __name__ == '__main__':
                         help='list all the projects')
 
     parser.add_argument('-c', '--config',
+                        default=DEFAULT_CONF,
                         help='additional configuration')
 
     parser.add_argument('projects',
@@ -108,3 +112,5 @@ if __name__ == '__main__':
                         help='which projects to run the command')
 
     ns = parser.parse_args(argv[1:])
+
+    load_configuration(ns.config)
