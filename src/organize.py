@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """
+TODO:
 1. read and validate the configuration
 2. parse arguments to see what should be done
 3. report nicely some results
@@ -9,6 +10,7 @@ Some good information to show
 - last time modified
 - time spent on if possible
 - differences between original and cloned repository
+
 """
 import argparse
 import logging
@@ -17,11 +19,28 @@ from configobj import ConfigObj
 from glob import glob
 from sys import argv
 from validate import Validator
+from subprocess import Popen, PIPE
 
 logger = logging.getLogger('organizer')
 
 DEFAULT_CONF = 'projects.ini'
 DEFAULT_SPEC = 'projects.spec'
+
+
+class ShellCommandRunner(object):
+    """
+    This class is in charge of executing shell commands, capture
+    output and so on
+    """
+    def __init__(self, cmd, args):
+        # cmd might have to be validated or found in the system in the
+        # path, and this should be done in a OS-independent way
+        self.cmd = cmd
+        self.args = args
+
+    def run(self, relative_cwd=None):
+        if relative_cwd:
+            pass
 
 
 class Profile(object):
