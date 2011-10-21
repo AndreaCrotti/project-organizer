@@ -4,17 +4,32 @@ This project aims to set up an uniform way to manage multiple
 projects, trying to support many different SCMs and modalities.
 
 
-* TODO take from mr.developer or write from scratch some code to abstract the SCM used
-
-* TODO define a grammar/syntax for a configuration file format
-
-* TODO write doc in RST format
-
 Every project can be a separate entity, but sharing configurations and
 general rules with many other projects.
 
 In case there is an original project of our personal fork, we should
 be able to see detailed diffs and statistics about it.
+
+* Git
+  We can use [[https://github.com/libgit2/pygit2][libgit2]] and its python bindings to access to git
+  repositories from git.
+
+* Mercurial
+  [[http://mercurial.selenic.com/wiki/MercurialApi][Official mercurial API]] to access the repository in an object
+  oriented fashion.
+
+* Bazaar
+
+* Subversion
+  [[http://svnbook.red-bean.com/en/1.1/ch08s02.html][using the SVN api]] with some examples in Python
+
+* Tasks
+** TODO take from mr.developer or write from scratch some code to abstract the SCM used
+
+** TODO define a grammar/syntax for a configuration file format
+
+** TODO write doc in RST format
+
 
 * Emacs integration
   Switching to project should be done withing Emacs (calling shell

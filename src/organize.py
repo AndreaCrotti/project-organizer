@@ -81,10 +81,41 @@ class BugTracker(Profile):
     pass
 
 
-class SCM(Profile):
+class Commit(object):
+    """
+    A commit can be shown in the same way everywhere
+    """
     pass
 
 
+class SCM(Profile):
+    """
+    Contains the interface that has to be implemented by each of the
+    SCM classes, and some functions which are similar for all of them
+    """
+
+    def __init__(self, url, path, user_pwd=None):
+        self.url = url
+        # if the user and password are None then we should be only
+        # able to fetch in theory, otherwise it must be a tuple
+        self.user_pwd = user_pwd
+        self.path = path
+        # for each of the different methods there can be more ways to
+        # fetch the data, must be able to set somehow a priority and
+        # how to create the different methods (for example ssh/http etc)
+
+    def fetch(self):
+        pass
+
+    def checkout(self):
+        pass
+
+    def new_commits(self):
+        # return a list of new commits, to show in some fancy way
+        pass
+
+
+#TODO: should I also be able to create new repositories?
 class Git(SCM):
     pass
 
