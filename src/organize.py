@@ -71,6 +71,13 @@ class ShellCommandRunner(object):
                 self.failed = True
 
 
+def run_cmd(command, args, cwd):
+    """shortcut to execute a command in an easier way
+    """
+    sh = ShellCommandRunner(command, args)
+    sh.run(cwd)
+
+
 class Profile(object):
     """A profile declares some extra options which might come handy
     """
@@ -105,10 +112,11 @@ class SCM(Profile):
         # how to create the different methods (for example ssh/http etc)
 
     def fetch(self):
-        pass
+        # put the arguments together
+        run_cmd(self.fetch)
 
     def checkout(self):
-        pass
+        run_cmd(self.checkout)
 
     def new_commits(self):
         # return a list of new commits, to show in some fancy way

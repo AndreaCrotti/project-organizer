@@ -19,9 +19,12 @@ be able to see detailed diffs and statistics about it.
   oriented fashion.
 
 * Bazaar
+  [[http://wiki.bazaar.canonical.com/BzrLib][BZrlib]]
 
 * Subversion
   [[http://svnbook.red-bean.com/en/1.1/ch08s02.html][using the SVN api]] with some examples in Python
+
+* To compile everything together we might need to use cmake
 
 * Tasks
 ** TODO take from mr.developer or write from scratch some code to abstract the SCM used
@@ -29,7 +32,6 @@ be able to see detailed diffs and statistics about it.
 ** TODO define a grammar/syntax for a configuration file format
 
 ** TODO write doc in RST format
-
 
 * Emacs integration
   Switching to project should be done withing Emacs (calling shell
