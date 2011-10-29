@@ -62,7 +62,8 @@ class ShellCommandRunner(object):
 
     def _format_cmd(self):
         # could also be a double join
-        return ' '.join([self.resolve(self.cmd), ] + self.args)
+        # return ' '.join([self.resolve(self.cmd), ] + self.args)
+        return [self.resolve(self.cmd), ] + self.args
 
     #todo: at the moment the exception and the erroneous return code
     #might have to be threat in the same way
