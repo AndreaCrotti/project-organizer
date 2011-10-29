@@ -40,3 +40,6 @@ be able to see detailed diffs and statistics about it.
   - restore buffers (maybe in new frames) and window configurations
   - show and analyse the time spent in each of the projects
     (possibly using org-mode and its advanced timing mechanisms)
+ 
+  Keep a database storing all the bugs filled, and create
+  org-mode-like links to be able to jump them easily.

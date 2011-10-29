@@ -95,13 +95,6 @@ class BugTracker(Profile):
     pass
 
 
-class Commit(object):
-    """
-    A commit can be shown in the same way everywhere
-    """
-    pass
-
-
 class SCM(Profile):
     """
     Contains the interface that has to be implemented by each of the
