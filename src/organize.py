@@ -21,7 +21,7 @@ Try to use metaclasses and create a nice DSL
 
 import argparse
 import logging
-import os
+from os import path, environ, getcwd, pathsep
 
 from configobj import ConfigObj
 from sys import argv
@@ -52,11 +52,11 @@ class ShellCommandRunner(object):
 
     @classmethod
     def resolve(cls, cmd):
-        ps = os.environ['PATH'].split(os.pathsep)
+        ps = environ['PATH'].split(pathsep)
         for pt in ps:
             # not checking if also executable here
-            full = os.path.join(pt, cmd)
-            if os.path.isfile(full):
+            full = path.join(pt, cmd)
+            if path.isfile(full):
                 return full
         # otherwise nothing is clearly found
 
@@ -86,7 +86,7 @@ class ShellCommandRunner(object):
 
 
 # todo: check if this is a good idea, since it's mutable
-def run_cmd(command, args, cwd=os.getcwd()):
+def run_cmd(command, args, cwd=getcwd()):
     """shortcut to execute a command in an easier way
     """
     sh = ShellCommandRunner(command, args)
@@ -121,9 +121,24 @@ class SCM(profile):
         # fetch the data, must be able to set somehow a priority and
         # how to create the different methods (for example ssh/http etc)
 
+    def _validate(self):
+        # the resolv can also be done here, so there's no real need of
+        # that class ShellCommandRunner
+        return ShellCommandRunner.resolve(self.ex) is not None
+
     def fetch(self):
+        if not self.user_pwd:
+            logger.warn("fetching without authentication, read only repository")
         # put the arguments together
-        pass
+        # if the path already exists maybe we should do a checkout
+        if path.isdir(self.path):
+            logger.warn("path already existing, trying a checkout instead")
+            self.checkout()
+            
+        else:
+            args = (self.fetch, self.path)
+            # fetch the repository there
+            ShellCommandRunner(self.ex, args).run(self.path)
 
     def checkout(self):
         pass
