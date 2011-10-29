@@ -12,9 +12,12 @@ Some good information to show
 - time spent on if possible
 - differences between original and cloned repository
 
+
+Try to use metaclasses and create a nice DSL
 """
 import argparse
 import logging
+import os
 
 from configobj import ConfigObj
 from glob import glob
@@ -69,13 +72,17 @@ class ShellCommandRunner(object):
         else:
             if self.proc.returncode != 0:
                 self.failed = True
+            else:
+                # in this case there should be no error
+                return out
 
 
-def run_cmd(command, args, cwd):
+# TODO: check if this is a good idea, since it's mutable
+def run_cmd(command, args, cwd=os.getcwd()):
     """shortcut to execute a command in an easier way
     """
     sh = ShellCommandRunner(command, args)
-    sh.run(cwd)
+    print(sh.run(cwd))
 
 
 class Profile(object):

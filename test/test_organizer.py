@@ -8,6 +8,7 @@ TODO:
 
 from StringIO import StringIO
 import unittest
+
 #TODO: make it in such a way that it will be easy to move around
 import src.organize as org
 
@@ -20,6 +21,12 @@ class TestShellCommands(unittest.TestCase):
         self.sh_commander.run('dslkfj')
         # is it really a good idea to create a FSM for this thing
         self.assertTrue(self.sh_commander.failed)
+
+    def test_run_cmds(self):
+        self.sh_commander = org.ShellCommandRunner('ls')
+        self.sh_commander.run()
+        # the command should in theory pass
+        self.assertFalse(self.sh_commander.failed)
 
 
 class TestValidation(unittest.TestCase):
