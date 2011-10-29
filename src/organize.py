@@ -68,6 +68,9 @@ class ShellCommandRunner(object):
     #might have to be threat in the same way
     def run(self, relative_cwd=None):
         #todo: what should be the type of relative_cwd, is that os-dependent or not?
+        cmd = self._format_cmd()
+        logger.info("running command %s" % cmd)
+        print("running command %s" % cmd)
         try:
             proc = Popen(self._format_cmd(),
                          cwd=relative_cwd, stderr=PIPE, stdout=PIPE)
@@ -116,7 +119,7 @@ def parse_entry(name, opts):
     }
     # this should be part of the validation process too
     assert 'url' in opts
-    found, url = opts.split(' ')
+    found, url = opts['url'].split(' ')
     assert found in match
     # where should be the user/password couple?
     # probably in some sort of encrypted database, or in a standard format
@@ -132,6 +135,9 @@ class SCM(Profile):
     contains the interface that has to be implemented by each of the
     scm classes, and some functions which are similar for all of them
     """
+
+    fetch_cmd = None
+    update_cmd = None
 
     def __init__(self, ex, url, path, user_pwd=None):
         # base executable
@@ -157,19 +163,27 @@ class SCM(Profile):
         # if the path already exists maybe we should do a checkout
         if path.isdir(self.path):
             logger.warn("path already existing, trying a checkout instead")
-            self.update(write=True)
+            self.fetch(write=True)
             
         else:
             args = (self.clone, self.path)
             # fetch the repository there
             ShellCommandRunner(self.ex, args).run(self.path)
 
-    def update(self, write=False):
+    #TODO: the ShellCommandRunner is not really helping in this case
+    def fetch(self, write=False):
         """
         Fetch new commits, and update the working directory if write= Truex
         """
         # the command used for fetching new commits
-        args = (self.update)
+        args = [self.fetch_cmd, self.url, self.path]
+        ShellCommandRunner(self.ex, args).run()
+
+        if write:
+            self.update()
+
+    def update(self):
+        args = [self.update, ]
         ShellCommandRunner(self.ex, args).run(self.path)
 
     def new_commits(self):
@@ -180,11 +194,13 @@ class SCM(Profile):
 
 #todo: should i also be able to create new repositories?
 class Git(SCM):
-    pass
+    fetch_cmd = "fetch"
+    update_cmd = "pull"
 
 
 class SVN(SCM):
-    pass
+    checkout_cmd = "update"
+    fetch_cmd = "checkout"
 
 
 class GitSvn(SCM):

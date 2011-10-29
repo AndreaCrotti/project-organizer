@@ -43,3 +43,7 @@ be able to see detailed diffs and statistics about it.
  
   Keep a database storing all the bugs filled, and create
   org-mode-like links to be able to jump them easily.
+
+* Ideas
+  - this project might be a good candidate to test the actor model for
+    some real concurrency, see for example pyzmq
