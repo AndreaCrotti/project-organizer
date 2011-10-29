@@ -52,9 +52,6 @@ class ShellCommandRunner(object):
 
     @classmethod
     def resolve(cls, cmd):
-        #TODO: use a way to resolve the path which avoids running with
-        #shell=True which doesn't give enough control on the given machine
-        import os
         ps = os.environ['PATH'].split(os.pathsep)
         for pt in ps:
             # not checking if also executable here
@@ -64,7 +61,8 @@ class ShellCommandRunner(object):
         # otherwise nothing is clearly found
 
     def _format_cmd(self):
-        return "%s %s" % (self.resolve(self.cmd), ' '.join(self.args))
+        # could also be a double join
+        return ' '.join([self.resolve(self.cmd), ] + self.args)
 
     #todo: at the moment the exception and the erroneous return code
     #might have to be threat in the same way
@@ -72,9 +70,9 @@ class ShellCommandRunner(object):
         #todo: what should be the type of relative_cwd, is that os-dependent or not?
         try:
             proc = Popen(self._format_cmd(),
-                         cwd=relative_cwd, stderr=PIPE, stdout=PIPE, shell=True)
+                         cwd=relative_cwd, stderr=PIPE, stdout=PIPE)
             # communicate also waits for the end of the process
-            out, err = proc.communicate()
+            out, _ = proc.communicate()
         except Exception:
             self.failed = True
         # fixme: make this more robust and reliable, maybe we should
