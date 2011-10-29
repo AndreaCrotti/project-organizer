@@ -94,16 +94,40 @@ def run_cmd(command, args, cwd=getcwd()):
 
 
 class Profile(object):
-    """a profile declares some extra options which might come handy
+    """a Profile declares some extra options which might come handy
     """
     pass
 
 
-class Bugtracker(profile):
+class Bugtracker(Profile):
     pass
 
 
-class SCM(profile):
+def parse_entry(name, opts):
+    """
+    Parse an entry in the form [scala-mode] url = ...
+    and create the correct repository out of it
+    """
+    match = {
+        'git': Git,
+        'bzr': BZR,
+        'svn': SVN,
+        'plain': Plain
+    }
+    # this should be part of the validation process too
+    assert 'url' in opts
+    found, url = opts.split(' ')
+    assert found in match
+    # where should be the user/password couple?
+    # probably in some sort of encrypted database, or in a standard format
+    return match[found](found, url, name)
+
+
+class Plain(object):
+    pass
+
+
+class SCM(Profile):
     """
     contains the interface that has to be implemented by each of the
     scm classes, and some functions which are similar for all of them
@@ -126,25 +150,31 @@ class SCM(profile):
         # that class ShellCommandRunner
         return ShellCommandRunner.resolve(self.ex) is not None
 
-    def fetch(self):
+    def clone(self):
         if not self.user_pwd:
             logger.warn("fetching without authentication, read only repository")
         # put the arguments together
         # if the path already exists maybe we should do a checkout
         if path.isdir(self.path):
             logger.warn("path already existing, trying a checkout instead")
-            self.checkout()
+            self.update(write=True)
             
         else:
-            args = (self.fetch, self.path)
+            args = (self.clone, self.path)
             # fetch the repository there
             ShellCommandRunner(self.ex, args).run(self.path)
 
-    def checkout(self):
-        pass
+    def update(self, write=False):
+        """
+        Fetch new commits, and update the working directory if write= Truex
+        """
+        # the command used for fetching new commits
+        args = (self.update)
+        ShellCommandRunner(self.ex, args).run(self.path)
 
     def new_commits(self):
         # return a list of new commits, to show in some fancy way
+        # not all the SCM can do this really easily
         pass
 
 
