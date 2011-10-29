@@ -17,16 +17,16 @@ import src.organize as org
 class TestShellCommands(unittest.TestCase):
 
     def test_not_existing_fails(self):
-        self.sh_commander = org.ShellCommandRunner('ldfs')
-        self.sh_commander.run('dslkfj')
+        sh_commander = org.ShellCommandRunner('ldfs')
+        sh_commander.run('dslkfj')
         # is it really a good idea to create a FSM for this thing
-        self.assertTrue(self.sh_commander.failed)
+        self.assertTrue(sh_commander.failed)
 
     def test_run_cmds(self):
-        self.sh_commander = org.ShellCommandRunner('ls')
-        self.sh_commander.run()
+        sh_commander = org.ShellCommandRunner('ls')
+        sh_commander.run()
         # the command should in theory pass
-        self.assertFalse(self.sh_commander.failed)
+        self.assertFalse(sh_commander.failed)
 
 
 class TestValidation(unittest.TestCase):
@@ -42,7 +42,7 @@ class TestValidation(unittest.TestCase):
     """
 
     def test_mispelled_option_fails(self):
-        self.io = StringIO(self.simple_spec)
-        print(org.load_configuration(self.io))
+        io = StringIO(self.simple_spec)
+        print(org.load_configuration(io))
         #TODO: make this work again
-        # self.assertTrue(org.load_configuration(self.io))
+        # self.assertTrue(org.load_configuration(io))

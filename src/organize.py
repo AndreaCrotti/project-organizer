@@ -48,62 +48,71 @@ class ShellCommandRunner(object):
         self.failed = False
 
     @classmethod
-    def _resolve(cls, cmd):
+    def resolve(cls, cmd):
         #TODO: use a way to resolve the path which avoids running with
         #shell=True which doesn't give enough control on the given machine
-        return cmd
+        import os
+        ps = os.path.split(os.pathsep)
+        for pt in ps:
+            # not checking if also executable here
+            full = os.path.join(pt, cmd)
+            if os.path.isfile(full):
+                return full
+        # otherwise nothing is clearly found
 
     def _format_cmd(self):
-        return "%s %s" % (self._resolve(self.cmd), ' '.join(self.args))
+        return "%s %s" % (self.resolve(self.cmd), ' '.join(self.args))
 
-    #TODO: at the moment the exception and the erroneous return code
+    #todo: at the moment the exception and the erroneous return code
     #might have to be threat in the same way
-    def run(self, relative_cwd=None):
-        #TODO: what should be the type of relative_cwd, is that os-dependent or not?
+    def run(self, relative_cwd=none):
+        #todo: what should be the type of relative_cwd, is that os-dependent or not?
         try:
-            self.proc = Popen(self._format_cmd(),
-                              cwd=relative_cwd, stderr=PIPE, stdout=PIPE, shell=True)
+            self.proc = popen(self._format_cmd(),
+                              cwd=relative_cwd, stderr=pipe, stdout=pipe, shell=true)
             # communicate also waits for the end of the process
             out, err = self.proc.communicate()
-        except Exception:
-            self.failed = True
-        # FIXME: make this more robust and reliable, maybe we should
-        # also return True or False depending if it's correctly done
+        except exception:
+            self.failed = true
+        # fixme: make this more robust and reliable, maybe we should
+        # also return true or false depending if it's correctly done
         else:
             if self.proc.returncode != 0:
-                self.failed = True
+                self.failed = true
             else:
                 # in this case there should be no error
                 return out
 
 
-# TODO: check if this is a good idea, since it's mutable
+# todo: check if this is a good idea, since it's mutable
 def run_cmd(command, args, cwd=os.getcwd()):
     """shortcut to execute a command in an easier way
     """
-    sh = ShellCommandRunner(command, args)
+    sh = shellcommandrunner(command, args)
     print(sh.run(cwd))
 
 
-class Profile(object):
-    """A profile declares some extra options which might come handy
+class profile(object):
+    """a profile declares some extra options which might come handy
     """
     pass
 
 
-class BugTracker(Profile):
+class bugtracker(profile):
     pass
 
 
-class SCM(Profile):
+class scm(profile):
     """
-    Contains the interface that has to be implemented by each of the
-    SCM classes, and some functions which are similar for all of them
+    contains the interface that has to be implemented by each of the
+    scm classes, and some functions which are similar for all of them
     """
 
-    def __init__(self, url, path, user_pwd=None):
+    def __init__(self, ex, url, path, user_pwd=none):
+        # base executable
+        self.ex = ex
         self.url = url
-        # if the user and password are None then we should be only
+        # if the user and password are none then we should be only
         # able to fetch in theory, otherwise it must be a tuple
         self.user_pwd = user_pwd
         self.path = path
@@ -123,21 +132,26 @@ class SCM(Profile):
         pass
 
 
-#TODO: should I also be able to create new repositories?
-class Git(SCM):
+#todo: should i also be able to create new repositories?
+class git(scm):
     pass
 
 
-class SVN(SCM):
+class svn(scm):
     pass
 
 
-class GitSVN(SCM):
+class gitsvn(scm):
     pass
 
 
-class Project(object):
+class project(object):
     pass
+
+
+class bzr(scm):
+    cmd = "bzr"
+    
 
 
 class Conf(object):
