@@ -12,15 +12,18 @@ Some good information to show
 - time spent on if possible
 - differences between original and cloned repository
 
+After the first validation we should also check if all the commands we
+need are actually found in the path, using the
+ShellCommandRunner.resolve function
 
 Try to use metaclasses and create a nice DSL
 """
+
 import argparse
 import logging
 import os
 
 from configobj import ConfigObj
-from glob import glob
 from sys import argv
 from validate import Validator
 from subprocess import Popen, PIPE
@@ -52,7 +55,7 @@ class ShellCommandRunner(object):
         #TODO: use a way to resolve the path which avoids running with
         #shell=True which doesn't give enough control on the given machine
         import os
-        ps = os.path.split(os.pathsep)
+        ps = os.environ['PATH'].split(os.pathsep)
         for pt in ps:
             # not checking if also executable here
             full = os.path.join(pt, cmd)
@@ -65,20 +68,20 @@ class ShellCommandRunner(object):
 
     #todo: at the moment the exception and the erroneous return code
     #might have to be threat in the same way
-    def run(self, relative_cwd=none):
+    def run(self, relative_cwd=None):
         #todo: what should be the type of relative_cwd, is that os-dependent or not?
         try:
-            self.proc = popen(self._format_cmd(),
-                              cwd=relative_cwd, stderr=pipe, stdout=pipe, shell=true)
+            proc = Popen(self._format_cmd(),
+                         cwd=relative_cwd, stderr=PIPE, stdout=PIPE, shell=True)
             # communicate also waits for the end of the process
-            out, err = self.proc.communicate()
-        except exception:
-            self.failed = true
+            out, err = proc.communicate()
+        except Exception:
+            self.failed = True
         # fixme: make this more robust and reliable, maybe we should
         # also return true or false depending if it's correctly done
         else:
-            if self.proc.returncode != 0:
-                self.failed = true
+            if proc.returncode != 0:
+                self.failed = True
             else:
                 # in this case there should be no error
                 return out
@@ -88,7 +91,7 @@ class ShellCommandRunner(object):
 def run_cmd(command, args, cwd=os.getcwd()):
     """shortcut to execute a command in an easier way
     """
-    sh = shellcommandrunner(command, args)
+    sh = ShellCommandRunner(command, args)
     print(sh.run(cwd))
 
 
@@ -108,7 +111,7 @@ class scm(profile):
     scm classes, and some functions which are similar for all of them
     """
 
-    def __init__(self, ex, url, path, user_pwd=none):
+    def __init__(self, ex, url, path, user_pwd=None):
         # base executable
         self.ex = ex
         self.url = url
@@ -122,10 +125,10 @@ class scm(profile):
 
     def fetch(self):
         # put the arguments together
-        run_cmd(self.fetch)
+        pass
 
     def checkout(self):
-        run_cmd(self.checkout)
+        pass
 
     def new_commits(self):
         # return a list of new commits, to show in some fancy way
@@ -181,7 +184,7 @@ if __name__ == '__main__':
 
     parser.add_argument('projects',
                         metavar='PROJECT',
-                        nargs='+',
+                        nargs='*',
                         help='which projects to run the command')
 
     ns = parser.parse_args(argv[1:])

@@ -28,6 +28,10 @@ class TestShellCommands(unittest.TestCase):
         # the command should in theory pass
         self.assertFalse(sh_commander.failed)
 
+    def test_resolving_things(self):
+        self.assertTrue(org.ShellCommandRunner.resolve('git') is not None)
+        print(org.ShellCommandRunner.resolve('bzr'))
+
 
 class TestValidation(unittest.TestCase):
     # ideally everything which is not specifically declared in the
