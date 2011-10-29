@@ -93,17 +93,17 @@ def run_cmd(command, args, cwd=os.getcwd()):
     print(sh.run(cwd))
 
 
-class profile(object):
+class Profile(object):
     """a profile declares some extra options which might come handy
     """
     pass
 
 
-class bugtracker(profile):
+class Bugtracker(profile):
     pass
 
 
-class scm(profile):
+class SCM(profile):
     """
     contains the interface that has to be implemented by each of the
     scm classes, and some functions which are similar for all of them
@@ -134,23 +134,23 @@ class scm(profile):
 
 
 #todo: should i also be able to create new repositories?
-class git(scm):
+class Git(SCM):
     pass
 
 
-class svn(scm):
+class SVN(SCM):
     pass
 
 
-class gitsvn(scm):
+class GitSvn(SCM):
     pass
 
 
-class project(object):
+class Project(object):
     pass
 
 
-class bzr(scm):
+class BZR(SCM):
     cmd = "bzr"
     
 
