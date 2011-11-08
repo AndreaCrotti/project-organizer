@@ -156,10 +156,9 @@ class ConfParser(object):
                     # load the specific entries
                     for key, val in sub_entry.items():
                         if type(val) == dict:
-                            self._parse_entry(key, val)
-
+                            yield self._parse_entry(key, val)
                 else:
-                    self._parse_entry(sec, sub_entry)
+                    yield self._parse_entry(sec, sub_entry)
 
 
 class Plain(Profile):
@@ -282,6 +281,11 @@ if __name__ == '__main__':
                         default=DEFAULT_CONF,
                         help='additional configuration')
 
+    parser.add_argument('action',
+                        nargs=1,
+                        choices=['fetch', 'update'],
+                        help='action to execute')
+
     parser.add_argument('projects',
                         metavar='PROJECT',
                         nargs='*',
@@ -291,4 +295,5 @@ if __name__ == '__main__':
 
     conf = load_configuration(ns.config)
     c = ConfParser(conf)
-    c.parse()
+    for found in c.parse():
+        getattr(found, ns.action[0])()
