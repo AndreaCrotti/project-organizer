@@ -108,7 +108,6 @@ def run_cmd(command, args, cwd=getcwd()):
     """shortcut to execute a command in an easier way
     """
     sh = ShellCommandRunner(command, args)
-    print(sh.run(cwd))
 
 
 class Profile(object):
@@ -121,27 +120,42 @@ class Bugtracker(Profile):
     pass
 
 
-def parse_entry(name, opts):
-    """
-    Parse an entry in the form [scala-mode] url = ...
-    and create the correct repository out of it
-    """
-    match = {
-        'git': Git,
-        'bzr': BZR,
-        'svn': SVN,
-        'plain': Plain
-    }
-    # this should be part of the validation process too
-    assert 'url' in opts
-    found, url = opts['url'].split(' ')
-    assert found in match
-    # where should be the user/password couple?
-    # probably in some sort of encrypted database, or in a standard format
-    return match[found](found, url, name)
+class ConfParser(object):
+    PRIVATE = ("profiles", "default")
 
+    def __init__(self, configuration):
+        self.configuration = configuration
 
-class Plain(object):
+    def _parse_entry(self, name, opts):
+        """
+        Parse an entry in the form [scala-mode] url = ...
+        and create the correct repository out of it
+        """
+        match = {
+            'git': Git,
+            'bzr': BZR,
+            'svn': SVN,
+            'hg': Mercurial,
+            'plain': Plain
+        }
+        # this should be part of the validation process too
+        # import pdb; pdb.set_trace()
+        logging.info("analysing %s" % name)
+        assert 'url' in opts
+        found, url = opts['url'].split(' ')
+        assert found in match
+        # where should be the user/password couple?
+        # probably in some sort of encrypted database, or in a standard format
+        return match[found](found, url, name)
+
+    def parse(self):
+        for sec in self.configuration:
+            if sec not in self.PRIVATE:
+                logging.debug("analysing %s" % sec)
+                self._parse_entry(sec, self.configuration[sec])
+                                
+
+class Plain(Profile):
     pass
 
 
@@ -207,6 +221,11 @@ class SCM(Profile):
         pass
 
 
+class Mercurial(SCM):
+    fetch_cmd = "fetch"
+    update_cmd = "pull"
+
+
 #todo: should i also be able to create new repositories?
 class Git(SCM):
     fetch_cmd = "fetch"
@@ -238,11 +257,11 @@ class Conf(object):
 
 
 def load_configuration(config_file):
-    val = Validator()
-    config = ConfigObj(config_file, configspec=DEFAULT_SPEC)
-    ret = config.validate(val)
-    print(ret)
-    return ret
+    val = Validator() 
+    conf = ConfigObj(config_file, configspec=DEFAULT_SPEC)
+    ret = conf.validate(val)
+    #TODO: raise an exception in case it didn't work out
+    return conf
 
 
 if __name__ == '__main__':
@@ -263,4 +282,6 @@ if __name__ == '__main__':
 
     ns = parser.parse_args(argv[1:])
 
-    load_configuration(ns.config)
+    conf = load_configuration(ns.config)
+    c = ConfParser(conf)
+    c.parse()
