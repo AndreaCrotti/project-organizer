@@ -141,7 +141,6 @@ class ConfParser(object):
         # this should be part of the validation process too
         # import pdb; pdb.set_trace()
         print("analysing %s" % name)
-        logging.info("analysing %s" % name)
         found, url = opts['url'].split(' ')
         assert found in match
         # where should be the user/password couple?
@@ -159,8 +158,8 @@ class ConfParser(object):
                         if type(val) == dict:
                             self._parse_entry(key, val)
 
-                logging.debug("analysing %s" % sec)
-                self._parse_entry(sec, sub_entry)
+                else:
+                    self._parse_entry(sec, sub_entry)
 
 
 class Plain(Profile):
