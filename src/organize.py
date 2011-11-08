@@ -16,7 +16,8 @@ After the first validation we should also check if all the commands we
 need are actually found in the path, using the
 ShellCommandRunner.resolve function
 
-Try to use metaclasses and create a nice DSL
+Try to use metaclasses and create a nice DSL.
+Try to use as little side-effects as possible
 """
 
 import argparse
@@ -28,10 +29,14 @@ from sys import argv
 from validate import Validator
 from subprocess import Popen, PIPE
 
+# set a simple logging mechanism
+logging.basicConfig()
 logger = logging.getLogger('organizer')
+logger.setLevel(logging.DEBUG)
 
 DEFAULT_CONF = 'projects.ini'
 DEFAULT_SPEC = 'projects.spec'
+SIMULATE = True
 
 
 class ShellCommandRunner(object):
@@ -52,6 +57,9 @@ class ShellCommandRunner(object):
 
     @classmethod
     def resolve(cls, cmd):
+        """Resolve the full path of the executable, or return None if
+        nothing was found
+        """
         ps = environ['PATH'].split(pathsep)
         for pt in ps:
             # not checking if also executable here
@@ -71,8 +79,14 @@ class ShellCommandRunner(object):
         #todo: what should be the type of relative_cwd, is that os-dependent or not?
         cmd = self._format_cmd()
         logger.info("running command %s" % cmd)
-        print("running command %s" % cmd)
+        if SIMULATE:
+            logger.debug("only simulating")
+            # this return is just to avoid the indentation level
+            return
+
         try:
+            #TODO: this part should be made parallel, maybe rewriting
+            #with zeromq or a simple threading infrastructure
             proc = Popen(self._format_cmd(),
                          cwd=relative_cwd, stderr=PIPE, stdout=PIPE)
             # communicate also waits for the end of the process
