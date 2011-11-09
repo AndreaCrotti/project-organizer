@@ -102,6 +102,41 @@ class ShellCommandRunner(object):
                 # in this case there should be no error
                 return out
 
+class Hosting(object):
+    """
+    Every different hosting service might provide different features,
+    such as mailing lists, different bug tracking mechanisms and so on.
+    """
+    match = None
+
+    def is_hosting_type(self, url):
+        # call the function or lookup the string
+        if callable(self.match):
+            self.match(url)
+        else:
+            return url.find(match):
+
+
+class Github(Hosting):
+    match = "github"
+
+
+class BitBucket(Hosting):
+    match = "bitbucket"
+
+
+class LaunchPad(Hosting):
+    match = "lp"
+
+
+class Customised(Hosting):
+    # this should always pass
+    match = lambda _: True
+
+
+def detect_hosting(url):
+    
+
 
 # todo: check if this is a good idea, since it's mutable
 def run_cmd(command, args, cwd=getcwd()):
@@ -110,14 +145,13 @@ def run_cmd(command, args, cwd=getcwd()):
     sh = ShellCommandRunner(command, args)
 
 
+#TODO: see maybe if we can define the interface in a smarter way
 class Profile(object):
     """a Profile declares some extra options which might come handy
     """
-    pass
-
-
-class Bugtracker(Profile):
-    pass
+    # some commands which should be possible from every profile
+    def backup(self):
+        raise NotImplementedError
 
 
 class ConfParser(object):
