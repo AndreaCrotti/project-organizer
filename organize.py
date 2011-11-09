@@ -135,7 +135,9 @@ class Customised(Hosting):
 
 
 def detect_hosting(url):
-    
+    # try to automatically go through the list of classes, possibly
+    # without really listing them again
+    pass
 
 
 # todo: check if this is a good idea, since it's mutable
