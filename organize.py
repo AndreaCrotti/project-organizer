@@ -112,9 +112,10 @@ class Hosting(object):
     def is_hosting_type(self, url):
         # call the function or lookup the string
         if callable(self.match):
+            # this is something that pylint can't possibly detect
             self.match(url)
         else:
-            return url.find(match):
+            return url.find(match)
 
 
 class Github(Hosting):
