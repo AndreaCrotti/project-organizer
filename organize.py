@@ -184,7 +184,6 @@ class ConfParser(object):
         }
         # this should be part of the validation process too
         # import pdb; pdb.set_trace()
-        print("analysing %s" % name)
         found, url = opts['url'].split(' ')
         assert found in match
         # where should be the user/password couple?
@@ -262,7 +261,7 @@ class SCM(Profile):
             self.update()
 
     def update(self):
-        args = [self.update, ]
+        args = [self.update_cmd, ]
         ShellCommandRunner(self.ex, args).run(self.path)
 
     def new_commits(self):
@@ -283,7 +282,7 @@ class Git(SCM):
 
 
 class SVN(SCM):
-    checkout_cmd = "update"
+    update_cmd = "update"
     fetch_cmd = "checkout"
 
 
