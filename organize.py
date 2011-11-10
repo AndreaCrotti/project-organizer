@@ -107,38 +107,44 @@ class Hosting(object):
     Every different hosting service might provide different features,
     such as mailing lists, different bug tracking mechanisms and so on.
     """
-    match = None
-
-    def is_hosting_type(self, url):
-        # call the function or lookup the string
-        if callable(self.match):
-            # this is something that pylint can't possibly detect
-            self.match(url)
-        else:
-            return url.find(match)
+    pass
 
 
 class Github(Hosting):
-    match = "github"
+
+    @classmethod
+    def match(cls, url):
+        return "github" in url
 
 
 class BitBucket(Hosting):
-    match = "bitbucket"
+
+    @classmethod
+    def match(cls, url):
+        return "bitbucket" in url
 
 
 class LaunchPad(Hosting):
-    match = "lp"
+
+    @classmethod
+    def match(cls, url):
+        return "lp" in url
 
 
 class Customised(Hosting):
     # this should always pass
-    match = lambda _: True
+    pass
 
 
 def detect_hosting(url):
     # try to automatically go through the list of classes, possibly
     # without really listing them again
-    pass
+    hostings = (BitBucket, Github, LaunchPad)
+    for scm in hostings:
+        if scm.match(url):
+            return scm(url)
+
+    return Customised(url)
 
 
 # todo: check if this is a good idea, since it's mutable
