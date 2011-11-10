@@ -107,7 +107,8 @@ class Hosting(object):
     Every different hosting service might provide different features,
     such as mailing lists, different bug tracking mechanisms and so on.
     """
-    pass
+    def __init__(self, url):
+        self.url = url
 
 
 class Github(Hosting):
