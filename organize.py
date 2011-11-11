@@ -156,21 +156,15 @@ def run_cmd(command, args, cwd=getcwd()):
 
 
 #TODO: see maybe if we can define the interface in a smarter way
-class Profile(object):
-    """a Profile declares some extra options which might come handy
+class Project(object):
+    """a Project declares some extra options which might come handy
     """
     # some commands which should be possible from every profile
     def backup(self):
         raise NotImplementedError
 
-
-class ConfParser(object):
-    PRIVATE = ("profiles", "default")
-
-    def __init__(self, configuration):
-        self.configuration = configuration
-
-    def _parse_entry(self, name, opts):
+    @classmethod
+    def parse_entry(cls, name, opts):
         """
         Parse an entry in the form [scala-mode] url = ...
         and create the correct repository out of it
@@ -182,6 +176,7 @@ class ConfParser(object):
             'hg': Mercurial,
             'plain': Plain
         }
+
         # this should be part of the validation process too
         # import pdb; pdb.set_trace()
         found, url = opts['url'].split(' ')
@@ -190,32 +185,57 @@ class ConfParser(object):
         # probably in some sort of encrypted database, or in a standard format
         return match[found](found, url, name)
 
+
+class ConfParser(object):
+    PRIVATE = ("profiles", "default")
+
+    def __init__(self, configuration):
+        self.configuration = configuration
+
     def parse(self):
-        #TODO: refactor this messy thing
         for sec in self.configuration:
             if sec not in self.PRIVATE:
                 sub_entry = self.configuration[sec]
                 if 'url' not in sub_entry:
-                    # load the specific entries
-                    for key, val in sub_entry.items():
-                        if type(val) == dict:
-                            yield self._parse_entry(key, val)
+                    yield MultiProject.parse_multi_entry(sec, sub_entry)
                 else:
-                    yield self._parse_entry(sec, sub_entry)
+                    yield Project.parse_entry(sec, sub_entry)
 
 
-class Plain(Profile):
+class Plain(Project):
     pass
 
 
-class SCM(Profile):
+class MultiProject(object):
+
+    def __init__(self, project_list=None):
+        self.project_list = project_list
+
+    def __iter__(self):
+        return iter(self.project_list)
+
+    @classmethod
+    def parse_multi_entry(cls, name, opts):
+        # load the specific entries
+        for key, val in opts.items():
+            if type(val) == dict:
+                yield Project.parse_entry(key, val)
+        
+
+
+class SCM(Project):
     """
     contains the interface that has to be implemented by each of the
-    scm classes, and some functions which are similar for all of them
+    scm classes, and some functions which are similar for all of them.
+
+    Does it make sense to make a distinction between centralised and
+    non centralised models
     """
 
-    fetch_cmd = None
-    update_cmd = None
+    # some more or less sane defaults
+    fetch_cmd = 'fetch'
+    xupdate_cmd = 'pull'
+    clone_cmd = 'clone'
 
     def __init__(self, ex, url, path, user_pwd=None):
         # base executable
@@ -244,7 +264,7 @@ class SCM(Profile):
             self.fetch(write=True)
             
         else:
-            args = (self.clone, self.path)
+            args = [self.clone_cmd, self.path]
             # fetch the repository there
             ShellCommandRunner(self.ex, args).run(self.path)
 
@@ -270,6 +290,9 @@ class SCM(Profile):
         pass
 
 
+#TODO: we might use attributes when it's a simple command and
+#properties if something more complex, to give always exactly the same
+#interface
 class Mercurial(SCM):
     fetch_cmd = "fetch"
     update_cmd = "pull"
@@ -326,17 +349,18 @@ if __name__ == '__main__':
 
     parser.add_argument('action',
                         nargs=1,
-                        choices=['fetch', 'update'],
+                        choices=['fetch', 'update', 'clone'],
                         help='action to execute')
 
     parser.add_argument('projects',
                         metavar='PROJECT',
                         nargs='*',
-                        help='which projects to run the command')
+                        help='which projects to run the command, all of them if not specified')
 
     ns = parser.parse_args(argv[1:])
 
     conf = load_configuration(ns.config)
     c = ConfParser(conf)
+
     for found in c.parse():
         getattr(found, ns.action[0])()
