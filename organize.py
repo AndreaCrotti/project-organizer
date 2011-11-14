@@ -17,7 +17,9 @@ need are actually found in the path, using the
 ShellCommandRunner.resolve function
 
 Try to use metaclasses and create a nice DSL.
-Try to use as little side-effects as possible
+Try to use as little side-effects as possible.
+
+Add a build hook mechanism, with some kind of defaults.
 """
 
 import argparse
@@ -155,10 +157,48 @@ def run_cmd(command, args, cwd=getcwd()):
     sh = ShellCommandRunner(command, args)
 
 
+class ProjectType(object):
+    pass
+
+class PythonProject(ProjectType):
+    build_cmd = "python setup.py develop --user"
+
+    @classmethod
+    def match(cls, base):
+        return path.isfile(path.join(base, 'setup.py'))
+
+
+class AutoconfProject(ProjectType):
+    #TODO: there should be also a way to configure it
+    build_cmd = "./configure && make -j3"
+
+    @classmethod
+    def match(cls, base):
+        markers = ('configure.in', 'configure.ac', 'makefile.am')
+        return any(path.isfile(path.join(base, x)) for x in markers)
+
+
+class MakefileOnly(ProjectType):
+    build_cmd = "make"
+
+    @classmethod
+    def match(cls, base):
+        return (not AutoconfProject.match(base)) and \
+            (path.isfile(path.join(base, 'Makefile')))
+
+
 #TODO: see maybe if we can define the interface in a smarter way
 class Project(object):
     """a Project declares some extra options which might come handy
     """
+    def __init__(self):
+        # this defines a few more nice things, should be mixed in as a
+        # trait or maybe a multiple inheritance
+        self.project_type = ProjectType()
+        
+    def build(self):
+        raise NotImplementedError
+
     # some commands which should be possible from every profile
     def backup(self):
         raise NotImplementedError
