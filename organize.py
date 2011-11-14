@@ -158,7 +158,8 @@ def run_cmd(command, args, cwd=getcwd()):
 
 
 class ProjectType(object):
-    pass
+    build_cmd = ""
+
 
 class PythonProject(ProjectType):
     build_cmd = "python setup.py develop --user"
@@ -183,19 +184,22 @@ class MakefileOnly(ProjectType):
 
     @classmethod
     def match(cls, base):
+        # if we can count on the order the first check is not useful
         return (not AutoconfProject.match(base)) and \
             (path.isfile(path.join(base, 'Makefile')))
+
+
+def detect_project_type(path):
+    prj_types = (PythonProject, AutoconfProject, MakefileOnly, ProjectType)
+    for p in prj_types:
+        if p.match(path):
+            return p()
 
 
 #TODO: see maybe if we can define the interface in a smarter way
 class Project(object):
     """a Project declares some extra options which might come handy
     """
-    def __init__(self):
-        # this defines a few more nice things, should be mixed in as a
-        # trait or maybe a multiple inheritance
-        self.project_type = ProjectType()
-        
     def build(self):
         raise NotImplementedError
 
@@ -274,7 +278,7 @@ class SCM(Project):
 
     # some more or less sane defaults
     fetch_cmd = 'fetch'
-    xupdate_cmd = 'pull'
+    update_cmd = 'pull'
     clone_cmd = 'clone'
 
     def __init__(self, ex, url, path, user_pwd=None):
@@ -288,6 +292,7 @@ class SCM(Project):
         # for each of the different methods there can be more ways to
         # fetch the data, must be able to set somehow a priority and
         # how to create the different methods (for example ssh/http etc)
+        self.project_type = detect_project_type(self.path)
 
     def _validate(self):
         # the resolv can also be done here, so there's no real need of
