@@ -270,7 +270,6 @@ class MultiProject(object):
                 yield Project.parse_entry(key, val)
         
 
-
 class SCM(Project):
     """
     contains the interface that has to be implemented by each of the
