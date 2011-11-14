@@ -160,6 +160,10 @@ def run_cmd(command, args, cwd=getcwd()):
 class ProjectType(object):
     build_cmd = ""
 
+    @classmethod
+    def match(cls, _):
+        return True
+
 
 class PythonProject(ProjectType):
     build_cmd = "python setup.py develop --user"
@@ -358,10 +362,6 @@ class GitSvn(SCM):
     pass
 
 
-class Project(object):
-    pass
-
-
 class BZR(SCM):
     cmd = "bzr"
     
@@ -381,7 +381,7 @@ def load_configuration(config_file):
     return conf
 
 
-if __name__ == '__main__':
+def parse_arguments():
     parser = argparse.ArgumentParser(description='Entry point to manage projects')
 
     parser.add_argument('-l', '--list',
@@ -402,8 +402,11 @@ if __name__ == '__main__':
                         nargs='*',
                         help='which projects to run the command, all of them if not specified')
 
-    ns = parser.parse_args(argv[1:])
+    return parser.parse_args()
+    
 
+if __name__ == '__main__':
+    ns = parse_arguments()
     conf = load_configuration(ns.config)
     c = ConfParser(conf)
 
