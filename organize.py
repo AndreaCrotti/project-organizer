@@ -228,14 +228,16 @@ class ConfParser(object):
         self.configuration = configuration
 
     def parse(self):
+        conf = {}
         for sec in self.configuration:
             if sec not in self.PRIVATE:
                 sub_entry = self.configuration[sec]
                 if 'url' not in sub_entry:
-                    for sub in MultiProject.parse_multi_entry(sec, sub_entry):
-                        yield sub
+                    conf[sec] = MultiProject.parse_multi_entry(sec, sub_entry)
                 else:
-                    yield Project.parse_entry(sec, sub_entry)
+                    conf[sec] = Project.parse_entry(sec, sub_entry)
+
+        return conf
 
 
 class Plain(Project):
@@ -253,9 +255,10 @@ class MultiProject(object):
     @classmethod
     def parse_multi_entry(cls, name, opts):
         # load the specific entries
+        conf = {}
         for key, val in opts.items():
             if type(val) == dict:
-                yield Project.parse_entry(key, val)
+                conf[key] = Project.parse_entry(key, val)
         
 
 class SCM(Project):
@@ -395,7 +398,10 @@ def parse_arguments():
 if __name__ == '__main__':
     ns = parse_arguments()
     conf = load_configuration(ns.config)
-    c = ConfParser(conf)
+    c = ConfParser(conf).parse()
 
-    for found in c.parse():
-        getattr(found, ns.action[0])()
+    if not ns.projects:
+        ns.projects = c.keys()  # scan on everything
+
+    for key, found in ((x, c[x]) for x in c.items()):
+        getattr(key, ns.action[0])()
