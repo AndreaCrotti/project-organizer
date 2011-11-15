@@ -159,44 +159,30 @@ def run_cmd(command, args, cwd=getcwd()):
 
 class ProjectType(object):
     build_cmd = ""
-
-    @classmethod
-    def match(cls, _):
-        return True
+    markers = tuple()  # empty
 
 
 class PythonProject(ProjectType):
     build_cmd = "python setup.py develop --user"
-
-    @classmethod
-    def match(cls, base):
-        return path.isfile(path.join(base, 'setup.py'))
+    markers = ('setup.py',)
 
 
 class AutoconfProject(ProjectType):
     #TODO: there should be also a way to configure it
     build_cmd = "./configure && make -j3"
-
-    @classmethod
-    def match(cls, base):
-        markers = ('configure.in', 'configure.ac', 'Makefile.am')
-        return any(path.isfile(path.join(base, x)) for x in markers)
+    markers = ('configure.in', 'configure.ac', 'Makefile.am')
 
 
 class MakefileOnly(ProjectType):
     build_cmd = "make"
-
-    @classmethod
-    def match(cls, base):
-        # if we can count on the order the first check is not useful
-        return (not AutoconfProject.match(base)) and \
-            (path.isfile(path.join(base, 'Makefile')))
+    markers = ('Makefile', )
 
 
-def detect_project_type(path):
+def make_project(path):
     prj_types = (PythonProject, AutoconfProject, MakefileOnly, ProjectType)
     for p in prj_types:
-        if p.match(path):
+        markers = p.markers
+        if any(path.isfile(path.join(path, x)) for x in markers):
             return p()
 
 
