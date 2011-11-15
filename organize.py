@@ -27,7 +27,6 @@ import logging
 from os import path, environ, getcwd, pathsep
 
 from configobj import ConfigObj
-from sys import argv
 from validate import Validator
 from subprocess import Popen, PIPE
 
@@ -178,11 +177,13 @@ class MakefileOnly(ProjectType):
     markers = ('Makefile', )
 
 
-def make_project(path):
+def make_project(base):
+    """Detect the kind of project and return it
+    """
     prj_types = (PythonProject, AutoconfProject, MakefileOnly, ProjectType)
     for p in prj_types:
         markers = p.markers
-        if any(path.isfile(path.join(path, x)) for x in markers):
+        if any(path.isfile(path.join(base, x)) for x in markers):
             return p()
 
 
@@ -231,7 +232,8 @@ class ConfParser(object):
             if sec not in self.PRIVATE:
                 sub_entry = self.configuration[sec]
                 if 'url' not in sub_entry:
-                    yield MultiProject.parse_multi_entry(sec, sub_entry)
+                    for sub in MultiProject.parse_multi_entry(sec, sub_entry):
+                        yield sub
                 else:
                     yield Project.parse_entry(sec, sub_entry)
 
@@ -281,7 +283,7 @@ class SCM(Project):
         # for each of the different methods there can be more ways to
         # fetch the data, must be able to set somehow a priority and
         # how to create the different methods (for example ssh/http etc)
-        self.project_type = detect_project_type(self.path)
+        self.project_type = make_project(self.path)
 
     def _validate(self):
         # the resolv can also be done here, so there's no real need of
