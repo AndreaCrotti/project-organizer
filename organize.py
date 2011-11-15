@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
 """
-TODO:
+Workflow
 1. read and validate the configuration
 2. parse arguments to see what should be done
 3. report nicely some results
-4. check if possible to create a DB of programs and their usual positions
+4. if possible to create a DB of programs and their usual positions
 
 Some good information to show
 - last time updated
@@ -179,7 +179,7 @@ class AutoconfProject(ProjectType):
 
     @classmethod
     def match(cls, base):
-        markers = ('configure.in', 'configure.ac', 'makefile.am')
+        markers = ('configure.in', 'configure.ac', 'Makefile.am')
         return any(path.isfile(path.join(base, x)) for x in markers)
 
 
