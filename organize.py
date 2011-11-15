@@ -227,10 +227,19 @@ class ConfParser(object):
     def __init__(self, configuration):
         self.configuration = configuration
 
+    #FIXME: not the right place
+    def __str__(self):
+        res = []
+        for key, val in self.configuration.items():
+            res.append("%s -> %s" % (key, str(val)))
+
+        return '\n'.join(res)
+
     def parse(self):
         conf = {}
         for sec in self.configuration:
             if sec not in self.PRIVATE:
+                print(str(conf) + "\n")
                 sub_entry = self.configuration[sec]
                 if 'url' not in sub_entry:
                     conf[sec] = MultiProject.parse_multi_entry(sec, sub_entry)
@@ -252,13 +261,24 @@ class MultiProject(object):
     def __iter__(self):
         return iter(self.project_list)
 
+    # if we don't have the attribute
+    def __getattribute__(self, attr):
+        try:
+            getattr(self, attr)
+        except AttributeError:
+            for prj in self.project_list:
+                getattr(prj, attr)
+
     @classmethod
     def parse_multi_entry(cls, name, opts):
+        project_list = []
         # load the specific entries
-        conf = {}
         for key, val in opts.items():
+            #TODO: assert maybe is better
             if type(val) == dict:
-                conf[key] = Project.parse_entry(key, val)
+                project_list.append(Project.parse_entry(key, val))
+
+        return MultiProject(project_list)
         
 
 class SCM(Project):
@@ -287,6 +307,9 @@ class SCM(Project):
         # fetch the data, must be able to set somehow a priority and
         # how to create the different methods (for example ssh/http etc)
         self.project_type = make_project(self.path)
+
+    def __str__(self):
+        return "%s -> %s" % (self.ex, self.url)
 
     def _validate(self):
         # the resolv can also be done here, so there's no real need of
@@ -353,7 +376,9 @@ class GitSvn(SCM):
 
 
 class BZR(SCM):
-    cmd = "bzr"
+    update_cmd = "branch"
+    fetch_cmd = "fetch"
+    clone_cmd = "checkout"
     
 
 
@@ -403,5 +428,5 @@ if __name__ == '__main__':
     if not ns.projects:
         ns.projects = c.keys()  # scan on everything
 
-    for key, found in ((x, c[x]) for x in c.items()):
-        getattr(key, ns.action[0])()
+    for key, found  in c.items():
+        getattr(found, ns.action[0])()
