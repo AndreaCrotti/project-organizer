@@ -155,11 +155,25 @@ def run_cmd(command, args, cwd=getcwd()):
     """
     sh = ShellCommandRunner(command, args)
 
+# taken from hgapi.py
+def hg_command(self, *args):
+    """Run a hg command in path and return the result.
+    Throws on error."""
+    proc = Popen(["hg", "--cwd", self.path, "--encoding", "UTF-8"] + list(args), stdout=PIPE, stderr=PIPE)
+
+    out, err = [x.decode("utf-8") for x in  proc.communicate()]
+
+    if proc.returncode:
+        cmd = (" ".join(["hg", "--cwd", self.path] + list(args)))
+        raise Exception("Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
+                        % (cmd,err,out,proc.returncode))
+    return out
+
 
 class ProjectType(object):
     build_cmd = ""
     markers = tuple()  # empty
-    
+
     @classmethod
     def detect(cls, base):
         """Detect the kind of project and return it
@@ -229,7 +243,7 @@ class MultiProject(object):
                 project_list.append(Project(key, val))
 
         return project_list
-        
+
 
 #TODO: see maybe if we can define the interface in a smarter way
 class Storage(object):
@@ -334,7 +348,7 @@ class SCM(Storage):
         if path.isdir(dest_dir):
             logger.warn("path already existing, trying a checkout instead")
             self.fetch(write=True)
-            
+
         else:
             args = [self.clone_cmd, dest_dir]
             # fetch the repository there
@@ -386,10 +400,10 @@ class BZR(SCM):
     update_cmd = "branch"
     fetch_cmd = "fetch"
     clone_cmd = "checkout"
-    
+
 
 def load_configuration(config_file):
-    val = Validator() 
+    val = Validator()
     conf = ConfigObj(config_file, configspec=DEFAULT_SPEC)
     #TODO: FIX the validation process
     # print(conf.validate(val))
@@ -419,7 +433,7 @@ def parse_arguments():
                         help='which projects to run the command, all of them if not specified')
 
     return parser.parse_args()
-    
+
 
 if __name__ == '__main__':
     ns = parse_arguments()
