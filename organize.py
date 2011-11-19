@@ -195,6 +195,9 @@ class Project(object):
         self.type = None
         self.create_project(opts)
 
+    def __str__(self):
+        return self.name
+
     def create_project(self, opts):
         self.storage = Storage.detect(opts)
         self.type = ProjectType.detect(self.name)
@@ -388,7 +391,8 @@ class BZR(SCM):
 def load_configuration(config_file):
     val = Validator() 
     conf = ConfigObj(config_file, configspec=DEFAULT_SPEC)
-    ret = conf.validate(val)
+    #TODO: FIX the validation process
+    # print(conf.validate(val))
     #TODO: raise an exception in case it didn't work out
     return conf
 
@@ -404,11 +408,11 @@ def parse_arguments():
                         default=DEFAULT_CONF,
                         help='additional configuration')
 
-    parser.add_argument('action',
-                        nargs=1,
+    parser.add_argument('-a', '--action',
                         choices=['fetch', 'update', 'clone'],
                         help='action to execute')
 
+    # the project can be passed as a choice
     parser.add_argument('projects',
                         metavar='PROJECT',
                         nargs='*',
@@ -425,5 +429,9 @@ if __name__ == '__main__':
     if not ns.projects:
         ns.projects = c.keys()  # scan on everything
 
-    for key, found  in c.items():
-        getattr(found, ns.action[0])()
+    # depending on the object which is actually found we might have
+    # different possible actions
+    if not ns.action:
+        for key, found  in c.items():
+            print(found)
+            # getattr(found, ns.action[0])()
