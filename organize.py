@@ -196,10 +196,9 @@ class Project(object):
         self.type = None
         self.create_project(opts)
 
-    @classmethod
-    def create_project(cls, opts):
+    def create_project(self, opts):
         self.storage = Storage.detect(opts)
-        self.type = ProjectType.detect_hosting
+        self.type = ProjectType.detect(opts)
 
 
 #TODO: see maybe if we can define the interface in a smarter way
@@ -214,7 +213,7 @@ class Storage(object):
         raise NotImplementedError
 
     @classmethod
-    def detect(cls, name, opts):
+    def detect(cls, opts):
         """
         Parse an entry in the form [scala-mode] url = ...
         and create the correct repository out of it
@@ -233,7 +232,7 @@ class Storage(object):
         assert found in match
         # where should be the user/password couple?
         # probably in some sort of encrypted database, or in a standard format
-        return match[found](found, url, name)
+        return match[found](found, url)
 
 
 class ConfParser(object):
@@ -257,9 +256,9 @@ class ConfParser(object):
                 print(str(conf) + "\n")
                 sub_entry = self.configuration[sec]
                 if 'url' not in sub_entry:
-                    conf[sec] = MultiProject.parse_multi_entry(sec, sub_entry)
+                    conf[sec] = MultiProject(sec, sub_entry)
                 else:
-                    conf[sec] = Project.parse_entry(sec, sub_entry)
+                    conf[sec] = Project(sec, sub_entry)
 
         return conf
 
@@ -270,8 +269,9 @@ class Plain(Storage):
 
 class MultiProject(object):
 
-    def __init__(self, project_list=None):
-        self.project_list = project_list
+    def __init__(self, name, conf_dict):
+        self.name = name
+        self.project_list = self.parse(conf_dict)
 
     def __iter__(self):
         return iter(self.project_list)
@@ -284,16 +284,15 @@ class MultiProject(object):
             for prj in self.project_list:
                 getattr(prj, attr)
 
-    @classmethod
-    def parse_multi_entry(cls, name, opts):
+    def parse(self, opts):
         project_list = []
         # load the specific entries
         for key, val in opts.items():
             #TODO: assert maybe is better
             if type(val) == dict:
-                project_list.append(Project.parse_entry(key, val))
+                project_list.append(Project(key, val))
 
-        return MultiProject(project_list)
+        return project_list
         
 
 class SCM(Storage):
@@ -318,10 +317,6 @@ class SCM(Storage):
         # able to fetch in theory, otherwise it must be a tuple
         self.user_pwd = user_pwd
         self.path = path
-        # for each of the different methods there can be more ways to
-        # fetch the data, must be able to set somehow a priority and
-        # how to create the different methods (for example ssh/http etc)
-        self.project_type = make_project(self.path)
 
     def __str__(self):
         return "%s -> %s" % (self.ex, self.url)
@@ -367,9 +362,6 @@ class SCM(Storage):
         pass
 
 
-#TODO: we might use attributes when it's a simple command and
-#properties if something more complex, to give always exactly the same
-#interface
 class Mercurial(SCM):
     fetch_cmd = "fetch"
     update_cmd = "pull"
@@ -395,13 +387,6 @@ class BZR(SCM):
     fetch_cmd = "fetch"
     clone_cmd = "checkout"
     
-
-
-class Conf(object):
-    # the conf is just a list of projects
-    def __init__(self):
-        pass
-
 
 def load_configuration(config_file):
     val = Validator() 
