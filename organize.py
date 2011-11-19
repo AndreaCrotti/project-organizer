@@ -187,7 +187,6 @@ class MakefileOnly(ProjectType):
     markers = ('Makefile', )
 
 
-
 class Project(object):
 
     def __init__(self, name, opts):
@@ -200,6 +199,34 @@ class Project(object):
         self.storage = Storage.detect(opts)
         self.type = ProjectType.detect(self.name)
 
+
+class MultiProject(object):
+
+    def __init__(self, name, conf_dict):
+        self.name = name
+        self.project_list = self.parse(conf_dict)
+
+    def __iter__(self):
+        return iter(self.project_list)
+
+    # # if we don't have the attribute
+    # def __getattribute__(self, attr):
+    #     try:
+    #         getattr(self, attr)
+    #     except AttributeError:
+    #         for prj in self.project_list:
+    #             getattr(prj, attr)
+
+    def parse(self, opts):
+        project_list = []
+        # load the specific entries
+        for key, val in opts.items():
+            #TODO: assert maybe is better
+            if type(val) == dict:
+                project_list.append(Project(key, val))
+
+        return project_list
+        
 
 #TODO: see maybe if we can define the interface in a smarter way
 class Storage(object):
@@ -265,34 +292,6 @@ class ConfParser(object):
 class Plain(Storage):
     pass
 
-
-class MultiProject(object):
-
-    def __init__(self, name, conf_dict):
-        self.name = name
-        self.project_list = self.parse(conf_dict)
-
-    def __iter__(self):
-        return iter(self.project_list)
-
-    # # if we don't have the attribute
-    # def __getattribute__(self, attr):
-    #     try:
-    #         getattr(self, attr)
-    #     except AttributeError:
-    #         for prj in self.project_list:
-    #             getattr(prj, attr)
-
-    def parse(self, opts):
-        project_list = []
-        # load the specific entries
-        for key, val in opts.items():
-            #TODO: assert maybe is better
-            if type(val) == dict:
-                project_list.append(Project(key, val))
-
-        return project_list
-        
 
 class SCM(Storage):
     """
