@@ -198,7 +198,7 @@ class Project(object):
 
     def create_project(self, opts):
         self.storage = Storage.detect(opts)
-        self.type = ProjectType.detect(opts)
+        self.type = ProjectType.detect(self.name)
 
 
 #TODO: see maybe if we can define the interface in a smarter way
@@ -253,7 +253,6 @@ class ConfParser(object):
         conf = {}
         for sec in self.configuration:
             if sec not in self.PRIVATE:
-                print(str(conf) + "\n")
                 sub_entry = self.configuration[sec]
                 if 'url' not in sub_entry:
                     conf[sec] = MultiProject(sec, sub_entry)
@@ -276,13 +275,13 @@ class MultiProject(object):
     def __iter__(self):
         return iter(self.project_list)
 
-    # if we don't have the attribute
-    def __getattribute__(self, attr):
-        try:
-            getattr(self, attr)
-        except AttributeError:
-            for prj in self.project_list:
-                getattr(prj, attr)
+    # # if we don't have the attribute
+    # def __getattribute__(self, attr):
+    #     try:
+    #         getattr(self, attr)
+    #     except AttributeError:
+    #         for prj in self.project_list:
+    #             getattr(prj, attr)
 
     def parse(self, opts):
         project_list = []
@@ -309,14 +308,13 @@ class SCM(Storage):
     update_cmd = 'pull'
     clone_cmd = 'clone'
 
-    def __init__(self, ex, url, path, user_pwd=None):
+    def __init__(self, ex, url, user_pwd=None):
         # base executable
         self.ex = ex
         self.url = url
         # if the user and password are none then we should be only
         # able to fetch in theory, otherwise it must be a tuple
         self.user_pwd = user_pwd
-        self.path = path
 
     def __str__(self):
         return "%s -> %s" % (self.ex, self.url)
@@ -326,35 +324,35 @@ class SCM(Storage):
         # that class ShellCommandRunner
         return ShellCommandRunner.resolve(self.ex) is not None
 
-    def clone(self):
+    def clone(self, dest_dir):
         if not self.user_pwd:
             logger.warn("fetching without authentication, read only repository")
         # put the arguments together
         # if the path already exists maybe we should do a checkout
-        if path.isdir(self.path):
+        if path.isdir(dest_dir):
             logger.warn("path already existing, trying a checkout instead")
             self.fetch(write=True)
             
         else:
-            args = [self.clone_cmd, self.path]
+            args = [self.clone_cmd, dest_dir]
             # fetch the repository there
-            ShellCommandRunner(self.ex, args).run(self.path)
+            ShellCommandRunner(self.ex, args).run(dest_dir)
 
     #TODO: the ShellCommandRunner is not really helping in this case
-    def fetch(self, write=False):
+    def fetch(self, dest_dir, write=False):
         """
         Fetch new commits, and update the working directory if write= Truex
         """
         # the command used for fetching new commits
-        args = [self.fetch_cmd, self.url, self.path]
+        args = [self.fetch_cmd, self.url, dest_dir]
         ShellCommandRunner(self.ex, args).run()
 
         if write:
             self.update()
 
-    def update(self):
+    def update(self, dest_dir):
         args = [self.update_cmd, ]
-        ShellCommandRunner(self.ex, args).run(self.path)
+        ShellCommandRunner(self.ex, args).run(dest_dir)
 
     def new_commits(self):
         # return a list of new commits, to show in some fancy way
