@@ -159,6 +159,16 @@ def run_cmd(command, args, cwd=getcwd()):
 class ProjectType(object):
     build_cmd = ""
     markers = tuple()  # empty
+    
+    @classmethod
+    def detect(cls, base):
+        """Detect the kind of project and return it
+        """
+        prj_types = (PythonProject, AutoconfProject, MakefileOnly, ProjectType)
+        for p in prj_types:
+            markers = p.markers
+            if any(path.isfile(path.join(base, x)) for x in markers):
+                return p()
 
 
 class PythonProject(ProjectType):
@@ -177,18 +187,23 @@ class MakefileOnly(ProjectType):
     markers = ('Makefile', )
 
 
-def make_project(base):
-    """Detect the kind of project and return it
-    """
-    prj_types = (PythonProject, AutoconfProject, MakefileOnly, ProjectType)
-    for p in prj_types:
-        markers = p.markers
-        if any(path.isfile(path.join(base, x)) for x in markers):
-            return p()
+
+class Project(object):
+
+    def __init__(self, name, opts):
+        self.name = name
+        self.storage = None
+        self.type = None
+        self.create_project(opts)
+
+    @classmethod
+    def create_project(cls, opts):
+        self.storage = Storage.detect(opts)
+        self.type = ProjectType.detect_hosting
 
 
 #TODO: see maybe if we can define the interface in a smarter way
-class Project(object):
+class Storage(object):
     """a Project declares some extra options which might come handy
     """
     def build(self):
@@ -199,7 +214,7 @@ class Project(object):
         raise NotImplementedError
 
     @classmethod
-    def parse_entry(cls, name, opts):
+    def detect(cls, name, opts):
         """
         Parse an entry in the form [scala-mode] url = ...
         and create the correct repository out of it
@@ -249,7 +264,7 @@ class ConfParser(object):
         return conf
 
 
-class Plain(Project):
+class Plain(Storage):
     pass
 
 
@@ -281,7 +296,7 @@ class MultiProject(object):
         return MultiProject(project_list)
         
 
-class SCM(Project):
+class SCM(Storage):
     """
     contains the interface that has to be implemented by each of the
     scm classes, and some functions which are similar for all of them.
