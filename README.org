@@ -16,7 +16,8 @@ be able to see detailed diffs and statistics about it.
 
 * Mercurial
   [[http://mercurial.selenic.com/wiki/MercurialApi][Official mercurial API]] to access the repository in an object
-  oriented fashion.
+  oriented fashion.  The official API can break compatibility at every
+  version, use [[https://bitbucket.org/haard/hgapi][HGapi]] to get a stable interface.
 
 * Bazaar
   [[http://wiki.bazaar.canonical.com/BzrLib][BZrlib]]
@@ -47,3 +48,6 @@ be able to see detailed diffs and statistics about it.
 * Ideas
   - this project might be a good candidate to test the actor model for
     some real concurrency, see for example pyzmq
+  - instead of reinventing the wheel and try to create another
+    SCM-agnostic generic system, just make it very easy to create
+    generic alias for commonly used operations
