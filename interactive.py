@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-from organize import load_configuration, MultiProject, Project
+import organize as org
 from conf import DEFAULT_CONF
 from cmd import Cmd
 
@@ -25,6 +25,7 @@ class Prj(Cmd):
         exit(0)
         
 
-if __name__ == '__main__':
-    interpreter = Prj(load_configuration(DEFAULT_CONF, MultiProject, Project))
+pif __name__ == '__main__':
+    interpreter = Prj(org.load_configuration(org.DEFAULT_CONF, org.MultiProject,
+                                             org.Project))
     interpreter.cmdloop()

@@ -109,12 +109,33 @@ class Hosting(object):
     def __init__(self, url):
         self.url = url
 
+    def __str__(self):
+        return type(self).__name__
+
+    @classmethod
+    def detect(cls, url):
+        # try to automatically go through the list of classes, possibly
+        # without really listing them again
+        hostings = (BitBucket, Github, LaunchPad)
+        for scm in hostings:
+            if scm.match(url):
+                return scm(url)
+
+        return Customised(url)
+
 
 class Github(Hosting):
 
     @classmethod
     def match(cls, url):
         return "github" in url
+
+
+class Dropbox(Hosting):
+    
+    @classmethod
+    def match(cls, url):
+        return "Dropbox" in url
 
 
 class BitBucket(Hosting):
@@ -135,16 +156,6 @@ class Customised(Hosting):
     # this should always pass
     pass
 
-
-def detect_hosting(url):
-    # try to automatically go through the list of classes, possibly
-    # without really listing them again
-    hostings = (BitBucket, Github, LaunchPad)
-    for scm in hostings:
-        if scm.match(url):
-            return scm(url)
-
-    return Customised(url)
 
 
 # todo: check if this is a good idea, since it's mutable
@@ -203,18 +214,22 @@ class Project(object):
 
     def __init__(self, name, opts):
         self.name = name
+        # is this really necessary??
         self.storage = None
         self.type = None
+        self.hosting = None
         self.opts = opts
         self.create_project()
 
     def __str__(self):
-        return self.name
+        return " | ".join(map(str, (self.name, self.storage, self.type, self. hosting)))
 
     def create_project(self):
         logger.debug("creating project %s" % self.name)
         self.storage = Storage.detect(self.opts)
         self.type = ProjectType.detect(self.name)
+        # pass the url which we just derived above
+        self.hosting = Hosting.detect(self.storage.url)
 
 
 class MultiProject(object):
@@ -305,6 +320,8 @@ class SCM(Storage):
 
     Does it make sense to make a distinction between centralised and
     non centralised models
+    
+    We need to have a very easy way to declare new aliases in a smart way.
     """
 
     # some more or less sane defaults
@@ -353,6 +370,10 @@ class SCM(Storage):
 
         if write:
             self.update()
+
+    def create_repository(self, hosting):
+        pass
+        
 
     def update(self, dest_dir):
         args = [self.update_cmd, ]
