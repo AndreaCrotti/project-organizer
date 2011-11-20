@@ -52,8 +52,6 @@ class ShellCommandRunner(object):
         else:
             self.args = []
 
-        self.failed = False
-
     @classmethod
     def resolve(cls, cmd):
         """Resolve the full path of the executable, or return None if
@@ -91,15 +89,9 @@ class ShellCommandRunner(object):
             # communicate also waits for the end of the process
             out, _ = proc.communicate()
         except Exception:
-            self.failed = True
-        # fixme: make this more robust and reliable, maybe we should
-        # also return true or false depending if it's correctly done
-        else:
-            if proc.returncode != 0:
-                self.failed = True
-            else:
-                # in this case there should be no error
-                return out
+            #TODO: add the return code
+            pass
+
 
 class Hosting(object):
     """
@@ -258,6 +250,15 @@ class MultiProject(object):
                 project_list.append(Project(key, val))
 
         return project_list
+
+
+class ShellCommandFailed(Exception):
+    def __init__(self, message, retcode):
+        super(ShellCommandFailed, self).__init__(message)
+        self.retcode = retcode
+
+    def __str__(self):
+        return "Shell command failed %s: %d" % (self.message, self.retcode)
 
 
 class MalformedEntry(Exception):
