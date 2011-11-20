@@ -26,17 +26,15 @@ import argparse
 import logging
 from os import path, environ, getcwd, pathsep
 
-from configobj import ConfigObj
-from validate import Validator
 from subprocess import Popen, PIPE
+
+from conf import DEFAULT_CONF, load_configuration
 
 # set a simple logging mechanism
 logging.basicConfig()
 logger = logging.getLogger('organizer')
 logger.setLevel(logging.DEBUG)
 
-DEFAULT_CONF = 'projects.ini'
-DEFAULT_SPEC = 'projects.spec'
 SIMULATE = True
 
 
@@ -281,33 +279,6 @@ class Storage(object):
         return match[found](found, url)
 
 
-class ConfParser(object):
-    PRIVATE = ("profiles", "default")
-
-    def __init__(self, configuration):
-        self.configuration = configuration
-
-    #FIXME: not the right place
-    def __str__(self):
-        res = []
-        for key, val in self.configuration.items():
-            res.append("%s -> %s" % (key, str(val)))
-
-        return '\n'.join(res)
-
-    def parse(self):
-        conf = {}
-        for sec in self.configuration:
-            if sec not in self.PRIVATE:
-                sub_entry = self.configuration[sec]
-                if 'url' not in sub_entry:
-                    conf[sec] = MultiProject(sec, sub_entry)
-                else:
-                    conf[sec] = Project(sec, sub_entry)
-
-        return conf
-
-
 class Plain(Storage):
     pass
 
@@ -404,20 +375,6 @@ class BZR(SCM):
     clone_cmd = "checkout"
 
 
-def load_configuration(config_file):
-    val = Validator()
-    conf = ConfigObj(config_file, configspec=DEFAULT_SPEC)
-    #TODO: FIX the validation process
-    # print(conf.validate(val))
-    #TODO: raise an exception in case it didn't work out
-    return conf
-
-
-def get_default_configuration():
-    conf = load_configuration(DEFAULT_CONF)
-    return ConfParser(conf).parse()
-
-
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Entry point to manage projects')
 
@@ -445,14 +402,13 @@ def parse_arguments():
 if __name__ == '__main__':
     ns = parse_arguments()
     conf = load_configuration(ns.config)
-    c = ConfParser(conf).parse()
 
     if not ns.projects:
-        ns.projects = c.keys()  # scan on everything
+        ns.projects = conf.keys()  # scan on everything
 
     # depending on the object which is actually found we might have
     # different possible actions
     if not ns.action:
-        for key, found  in c.items():
+        for key, found  in conf.items():
             print(found)
             # getattr(found, ns.action[0])()
