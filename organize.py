@@ -411,6 +411,11 @@ def load_configuration(config_file):
     return conf
 
 
+def get_default_configuration():
+    conf = load_configuration(DEFAULT_CONF)
+    return ConfParser(conf).parse()
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Entry point to manage projects')
 
