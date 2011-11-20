@@ -1,7 +1,10 @@
 #!/usr/bin/env python2
 
-from organize import get_default_configuration
+from organize import load_configuration, MultiProject, Project
+from conf import DEFAULT_CONF
 from cmd import Cmd
+
+from sys import exit
 
 # cmd version
 
@@ -15,8 +18,13 @@ class Prj(Cmd):
         """List all the projects, printing out the some properties
         """
         print(self.conf.keys())
+
+    def do_quit(self):
+        """Exit the interpreter
+        """
+        exit(0)
         
 
 if __name__ == '__main__':
-    interpreter = Prj(get_default_configuration())
+    interpreter = Prj(load_configuration(DEFAULT_CONF, MultiProject, Project))
     interpreter.cmdloop()

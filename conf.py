@@ -22,7 +22,7 @@ class ConfParser(object):
 
         return '\n'.join(res)
 
-    def parse(self):
+    def parse(self, multi, simple):
         """Parse 
         """
         conf = {}
@@ -31,17 +31,17 @@ class ConfParser(object):
                 sub_entry = self.configuration[sec]
                 if 'url' not in sub_entry:
                     #TODO: project and multiproject should be passed from the outside
-                    conf[sec] = MultiProject(sec, sub_entry)
+                    conf[sec] = multi(sec, sub_entry)
                 else:
-                    conf[sec] = Project(sec, sub_entry)
+                    conf[sec] = simple(sec, sub_entry)
 
         return conf
 
 
-def load_configuration(config_file):
+def load_configuration(config_file, multi, simple):
     val = Validator()
     conf = ConfigObj(config_file, configspec=DEFAULT_SPEC)
     #TODO: FIX the validation process
     # print(conf.validate(val))
     #TODO: raise an exception in case it didn't work out
-    return ConfParser(conf).parse()
+    return ConfParser(conf).parse(multi, simple)

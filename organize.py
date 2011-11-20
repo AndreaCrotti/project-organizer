@@ -245,6 +245,18 @@ class MultiProject(object):
         return project_list
 
 
+class MalformedEntry(Exception):
+    #TODO: this should take some information about the actual object
+    #analysed
+    pass
+
+
+class NoStorageFound(MalformedEntry):
+    def __init__(self, message):
+        super(NoStorageFound, self).__init__(message)
+
+
+
 #TODO: see maybe if we can define the interface in a smarter way
 class Storage(object):
     """a Project declares some extra options which might come handy
@@ -273,6 +285,9 @@ class Storage(object):
         # this should be part of the validation process too
         # import pdb; pdb.set_trace()
         found, url = opts['url'].split(' ')
+        if not found in match:
+            raise NoStorageFound("no valid storage found in %s" % url)
+
         assert found in match
         # where should be the user/password couple?
         # probably in some sort of encrypted database, or in a standard format
@@ -401,7 +416,7 @@ def parse_arguments():
 
 if __name__ == '__main__':
     ns = parse_arguments()
-    conf = load_configuration(ns.config)
+    conf = load_configuration(ns.config, MultiProject, Project)
 
     if not ns.projects:
         ns.projects = conf.keys()  # scan on everything
