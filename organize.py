@@ -207,13 +207,15 @@ class Project(object):
         self.name = name
         self.storage = None
         self.type = None
-        self.create_project(opts)
+        self.opts = opts
+        self.create_project()
 
     def __str__(self):
         return self.name
 
-    def create_project(self, opts):
-        self.storage = Storage.detect(opts)
+    def create_project(self):
+        logger.debug("creating project %s" % self.name)
+        self.storage = Storage.detect(self.opts)
         self.type = ProjectType.detect(self.name)
 
 

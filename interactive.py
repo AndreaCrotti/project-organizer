@@ -8,12 +8,13 @@ from cmd import Cmd
 class Prj(Cmd):
 
     def __init__(self, conf):
-        self.c = ConfParser(conf).parse()
+        self.conf = conf
+        Cmd.__init__(self)
 
     def do_list(self, _):
         """List all the projects, printing out the some properties
         """
-        print(self.c.keys())
+        print(self.conf.keys())
         
 
 if __name__ == '__main__':
