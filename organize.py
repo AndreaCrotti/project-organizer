@@ -47,10 +47,7 @@ class ShellCommandRunner(object):
         # cmd might have to be validated or found in the system in the
         # path, and this should be done in a OS-independent way
         self.cmd = cmd
-        if args:
-            self.args = args
-        else:
-            self.args = []
+        self.args = args if args else []
 
     @classmethod
     def resolve(cls, cmd):
