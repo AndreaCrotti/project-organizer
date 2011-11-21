@@ -121,7 +121,7 @@ class Github(Hosting):
 
 
 class Dropbox(Hosting):
-    
+
     @classmethod
     def match(cls, url):
         return "Dropbox" in url
@@ -146,7 +146,6 @@ class Customised(Hosting):
     pass
 
 
-
 # todo: check if this is a good idea, since it's mutable
 def run_cmd(command, args, cwd=getcwd()):
     """shortcut to execute a command in an easier way
@@ -154,18 +153,18 @@ def run_cmd(command, args, cwd=getcwd()):
     sh = ShellCommandRunner(command, args)
 
 # taken from hgapi.py
-def hg_command(self, *args):
-    """Run a hg command in path and return the result.
-    Throws on error."""
-    proc = Popen(["hg", "--cwd", self.path, "--encoding", "UTF-8"] + list(args), stdout=PIPE, stderr=PIPE)
+# def hg_command(self, *args):
+#     """Run a hg command in path and return the result.
+#     Throws on error."""
+#     proc = Popen(["hg", "--cwd", self.path, "--encoding", "UTF-8"] + list(args), stdout=PIPE, stderr=PIPE)
 
-    out, err = [x.decode("utf-8") for x in  proc.communicate()]
+#     out, err = [x.decode("utf-8") for x in  proc.communicate()]
 
-    if proc.returncode:
-        cmd = (" ".join(["hg", "--cwd", self.path] + list(args)))
-        raise Exception("Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
-                        % (cmd,err,out,proc.returncode))
-    return out
+#     if proc.returncode:
+#         cmd = (" ".join(["hg", "--cwd", self.path] + list(args)))
+#         raise Exception("Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
+#                         % (cmd,err,out,proc.returncode))
+#     return out
 
 
 class ProjectType(object):
