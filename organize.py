@@ -366,7 +366,7 @@ class SCM(Storage):
         ShellCommandRunner(self.ex, args).run()
 
         if write:
-            self.update()
+            self.update(self.path)
 
     def create_repository(self, hosting):
         pass

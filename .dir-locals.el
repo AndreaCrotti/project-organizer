@@ -3,4 +3,4 @@
 
 ((python-mode
   (eval . (flymake-mode t))
-  (compile-command . "nosetests -v")))
+  (compile-command . "nosetests -v -s")))
