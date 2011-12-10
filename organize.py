@@ -317,7 +317,7 @@ class SCM(Storage):
 
     Does it make sense to make a distinction between centralised and
     non centralised models
-    
+
     We need to have a very easy way to declare new aliases in a smart way.
     """
 
@@ -370,7 +370,7 @@ class SCM(Storage):
 
     def create_repository(self, hosting):
         pass
-        
+
 
     def update(self, dest_dir):
         args = [self.update_cmd, ]
