@@ -7,7 +7,7 @@ version = '0.1'
 INSTALL_REQUIRES = []
 
 REQUIRED_DATA = {
-    'configuration': ['projects.*']
+    'conf': ['sample.ini', 'projects.spec']
 }
 
 try:
