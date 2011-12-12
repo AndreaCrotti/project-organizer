@@ -6,6 +6,10 @@ version = '0.1'
 
 INSTALL_REQUIRES = []
 
+REQUIRED_DATA = {
+    'configuration': ['projects.*']
+}
+
 try:
     import argparse
 except ImportError:
@@ -16,13 +20,19 @@ try:
 except ImportError:
     INSTALL_REQUIRES.append('configobj')
 
-setup(
-    name=package,
-    version=version,
-    packages=find_packages(),
-    description="organize multiple projects",
-    test_suite='test.test_organizer',
-    author='Andrea Crotti',
-    author_email='andrea.crotti.0@gmail.com',
-    scripts=['src/organize.py']
-    )
+setup_cfg = {
+    'name': package,
+    'version': version,
+    'packages': find_packages(),
+    'package_data': REQUIRED_DATA,
+    'include_package_data': True,
+    'description': "organize multiple projects",
+    'install_requires': INSTALL_REQUIRES,
+    'test_requires': ['nose', 'mock'],
+    'test_suite': 'nose.collector',
+    'author': 'Andrea Crotti',
+    'author_email': 'andrea.crotti.0@gmail.com',
+    'scripts': ['bin/organizer.py']
+}
+
+setup(**setup_cfg)
