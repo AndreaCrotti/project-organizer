@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 """
-Workflow
+Workflow:
 1. read and validate the configuration
 2. parse arguments to see what should be done
 3. report nicely some results

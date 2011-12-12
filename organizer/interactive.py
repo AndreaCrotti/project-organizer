@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
-import organize as org
-from conf import DEFAULT_CONF
+import organizer.organize as org
+from organizer.conf import DEFAULT_CONF
 from cmd import Cmd
 
 from sys import exit
@@ -23,9 +23,9 @@ class Prj(Cmd):
         """Exit the interpreter
         """
         exit(0)
-        
 
-pif __name__ == '__main__':
+
+if __name__ == '__main__':
     interpreter = Prj(org.load_configuration(org.DEFAULT_CONF, org.MultiProject,
                                              org.Project))
     interpreter.cmdloop()
