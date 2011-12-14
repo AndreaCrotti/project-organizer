@@ -10,7 +10,7 @@ from StringIO import StringIO
 import unittest
 
 #TODO: make it in such a way that it will be easy to move around
-import organize as org
+import organizer.organize as org
 
 #TODO: switch to something smarter
 
@@ -53,7 +53,7 @@ class TestValidation(unittest.TestCase):
 
 
 class TestSCMDetection(unittest.TestCase):
-    
+
     def test_locate_scm(self):
         mappings = {
             'lp:python-mode': org.LaunchPad,

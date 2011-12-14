@@ -1,6 +1,5 @@
-#!/usr/bin/env python2
 """
-Workflow
+Workflow:
 1. read and validate the configuration
 2. parse arguments to see what should be done
 3. report nicely some results
@@ -22,72 +21,8 @@ Try to use as little side-effects as possible.
 Add a build hook mechanism, with some kind of defaults.
 """
 
-import argparse
-import logging
-from os import path, environ, getcwd, pathsep
-
-from subprocess import Popen, PIPE
-
-from conf import DEFAULT_CONF, load_configuration
-
-# set a simple logging mechanism
-logging.basicConfig()
-logger = logging.getLogger('organizer')
-logger.setLevel(logging.DEBUG)
-
-SIMULATE = True
-
-
-class ShellCommandRunner(object):
-    """
-    This class is in charge of executing shell commands, capture
-    output and so on
-    """
-    def __init__(self, cmd, args=None):
-        # cmd might have to be validated or found in the system in the
-        # path, and this should be done in a OS-independent way
-        self.cmd = cmd
-        self.args = args if args else []
-
-    @classmethod
-    def resolve(cls, cmd):
-        """Resolve the full path of the executable, or return None if
-        nothing was found
-        """
-        ps = environ['PATH'].split(pathsep)
-        for pt in ps:
-            # not checking if also executable here
-            full = path.join(pt, cmd)
-            if path.isfile(full):
-                return full
-        # otherwise nothing is clearly found
-
-    def _format_cmd(self):
-        # could also be a double join
-        # return ' '.join([self.resolve(self.cmd), ] + self.args)
-        return [self.resolve(self.cmd), ] + self.args
-
-    #todo: at the moment the exception and the erroneous return code
-    #might have to be threat in the same way
-    def run(self, relative_cwd=None):
-        #todo: what should be the type of relative_cwd, is that os-dependent or not?
-        cmd = self._format_cmd()
-        logger.info("running command %s" % cmd)
-        if SIMULATE:
-            logger.debug("only simulating")
-            # this return is just to avoid the indentation level
-            return
-
-        try:
-            #TODO: this part should be made parallel, maybe rewriting
-            #with zeromq or a simple threading infrastructure
-            proc = Popen(self._format_cmd(),
-                         cwd=relative_cwd, stderr=PIPE, stdout=PIPE)
-            # communicate also waits for the end of the process
-            out, _ = proc.communicate()
-        except Exception:
-            #TODO: add the return code
-            pass
+from os import getcwd
+from organizer.commander import ShellCommandRunner
 
 
 class Hosting(object):
@@ -317,7 +252,7 @@ class SCM(Storage):
 
     Does it make sense to make a distinction between centralised and
     non centralised models
-    
+
     We need to have a very easy way to declare new aliases in a smart way.
     """
 
@@ -370,7 +305,7 @@ class SCM(Storage):
 
     def create_repository(self, hosting):
         pass
-        
+
 
     def update(self, dest_dir):
         args = [self.update_cmd, ]
@@ -406,42 +341,3 @@ class BZR(SCM):
     update_cmd = "branch"
     fetch_cmd = "fetch"
     clone_cmd = "checkout"
-
-
-def parse_arguments():
-    parser = argparse.ArgumentParser(description='Entry point to manage projects')
-
-    parser.add_argument('-l', '--list',
-                        action='store_true',
-                        help='list all the projects')
-
-    parser.add_argument('-c', '--config',
-                        default=DEFAULT_CONF,
-                        help='additional configuration')
-
-    parser.add_argument('-a', '--action',
-                        choices=['fetch', 'update', 'clone'],
-                        help='action to execute')
-
-    # the project can be passed as a choice
-    parser.add_argument('projects',
-                        metavar='PROJECT',
-                        nargs='*',
-                        help='which projects to run the command, all of them if not specified')
-
-    return parser.parse_args()
-
-
-if __name__ == '__main__':
-    ns = parse_arguments()
-    conf = load_configuration(ns.config, MultiProject, Project)
-
-    if not ns.projects:
-        ns.projects = conf.keys()  # scan on everything
-
-    # depending on the object which is actually found we might have
-    # different possible actions
-    if not ns.action:
-        for key, found  in conf.items():
-            print(found)
-            # getattr(found, ns.action[0])()

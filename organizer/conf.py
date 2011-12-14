@@ -5,10 +5,11 @@ from validate import Validator
 DEFAULT_SPEC = 'projects.spec'
 DEFAULT_CONF = 'projects.ini'
 
-# from organize import MultiProject, Project
-
 
 class ConfParser(object):
+    """Analyzes the configuration files and generate the right thing
+    """
+
     PRIVATE = ("profiles", "default")
 
     def __init__(self, configuration):
@@ -23,7 +24,7 @@ class ConfParser(object):
         return '\n'.join(res)
 
     def parse(self, multi, simple):
-        """Parse 
+        """Parse
         """
         conf = {}
         for sec in self.configuration:
@@ -39,9 +40,7 @@ class ConfParser(object):
 
 
 def load_configuration(config_file, multi, simple):
-    val = Validator()
+    #TODO: rewrite the validation process
+    # val = Validator()
     conf = ConfigObj(config_file, configspec=DEFAULT_SPEC)
-    #TODO: FIX the validation process
-    # print(conf.validate(val))
-    #TODO: raise an exception in case it didn't work out
     return ConfParser(conf).parse(multi, simple)
