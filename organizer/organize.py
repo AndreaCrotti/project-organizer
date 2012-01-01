@@ -21,8 +21,12 @@ Try to use as little side-effects as possible.
 Add a build hook mechanism, with some kind of defaults.
 """
 
+import logging
+
 from os import getcwd
 from organizer.commander import ShellCommandRunner
+
+logger = logging.getLogger(__name__)
 
 
 class Hosting(object):

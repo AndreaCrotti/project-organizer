@@ -48,16 +48,3 @@ class TestValidation(unittest.TestCase):
         # print(org.load_configuration(io))
         #TODO: make this work again
         # self.assertTrue(org.load_configuration(io))
-
-
-class TestSCMDetection(unittest.TestCase):
-
-    def test_locate_scm(self):
-        mappings = {
-            'lp:python-mode': org.LaunchPad,
-            'github:Emacs-configuration': org.Github
-        }
-
-        # for key, val in mappings.items():
-        #     scm = org.detect_hosting(key)
-        #     self.assertEqual(type(scm), val)
