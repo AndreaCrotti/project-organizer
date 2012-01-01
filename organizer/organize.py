@@ -158,33 +158,16 @@ class Project(object):
         # pass the url which we just derived above
         self.hosting = Hosting.detect(self.storage.url)
 
-
-class MultiProject(object):
-
-    def __init__(self, name, conf_dict):
-        self.name = name
-        self.project_list = self.parse(conf_dict)
-
-    def __iter__(self):
-        return iter(self.project_list)
-
-    # # if we don't have the attribute
-    # def __getattribute__(self, attr):
-    #     try:
-    #         getattr(self, attr)
-    #     except AttributeError:
-    #         for prj in self.project_list:
-    #             getattr(prj, attr)
-
-    def parse(self, opts):
-        project_list = []
-        # load the specific entries
-        for key, val in opts.items():
-            #TODO: assert maybe is better
-            if type(val) == dict:
-                project_list.append(Project(key, val))
-
-        return project_list
+    @classmethod
+    def parse(self, conf_dic):
+        """Parse
+        """
+        PRIVATE = ("profiles", "default")
+        for sec in conf_dic:
+            if sec not in PRIVATE:
+                sub_entry = conf_dic[sec]
+                assert 'url' in sub_entry
+                yield Project(sec, sub_entry)
 
 
 class ShellCommandFailed(Exception):
@@ -196,16 +179,12 @@ class ShellCommandFailed(Exception):
         return "Shell command failed %s: %d" % (self.message, self.retcode)
 
 
-class MalformedEntry(Exception):
-    #TODO: this should take some information about the actual object
-    #analysed
-    pass
+class MalformedEntry(Exception): pass
 
 
 class NoStorageFound(MalformedEntry):
     def __init__(self, message):
         super(NoStorageFound, self).__init__(message)
-
 
 
 #TODO: see maybe if we can define the interface in a smarter way

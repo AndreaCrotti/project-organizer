@@ -11,6 +11,7 @@ import unittest
 
 #TODO: make it in such a way that it will be easy to move around
 import organizer.organize as org
+import organizer.conf as conf
 
 #TODO: switch to something smarter
 
@@ -19,8 +20,6 @@ class TestShellCommands(unittest.TestCase):
     def test_not_existing_fails(self):
         sh_commander = org.ShellCommandRunner('ldfs')
         sh_commander.run('dslkfj')
-        # is it really a good idea to create a FSM for this thing
-        # self.assertTrue(sh_commander.failed)
 
     def test_run_cmds(self):
         sh_commander = org.ShellCommandRunner('ls')
