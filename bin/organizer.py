@@ -4,10 +4,14 @@ import logging
 from organizer.conf import load_configuration, DEFAULT_CONF
 from organizer.organize import Project
 
-# set a simple logging mechanism
-logging.basicConfig()
+LOG_LEVELS = {
+    'debug': logging.DEBUG,
+    'info': logging.INFO,
+    'warning': logging.WARNING,
+    'error': logging.ERROR,
+}
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def parse_arguments():
@@ -16,6 +20,11 @@ def parse_arguments():
     parser.add_argument('-l', '--list',
                         action='store_true',
                         help='list all the projects')
+
+    parser.add_argument('-v', '--log_level',
+                        choices=LOG_LEVELS,
+                        default='info',
+                        help='log level desired')
 
     parser.add_argument('-c', '--config',
                         default=DEFAULT_CONF,
@@ -34,9 +43,15 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def setup_logging(level):
+    root_logger = logging.getLogger()
+    root_logger.setLevel(LOG_LEVELS[level])
+
+
 def main():
     ns = parse_arguments()
-    conf = load_configuration(ns.config, MultiProject, Project)
+    conf = load_configuration(ns.config, Project)
+    setup_logging(ns.log_level)
 
     if not ns.projects:
         ns.projects = conf.keys()  # scan on everything
@@ -47,7 +62,3 @@ def main():
         for key, found  in conf.items():
             print(found)
             # getattr(found, ns.action[0])()
-
-
-if __name__ == '__main__':
-    main()
