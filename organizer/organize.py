@@ -24,7 +24,7 @@ Add a build hook mechanism, with some kind of defaults.
 
 import logging
 
-from os import getcwd
+from os import getcwd, path
 from organizer.commander import ShellCommandRunner
 
 logger = logging.getLogger(__name__)
@@ -78,7 +78,8 @@ class LaunchPad(Hosting):
 
     @classmethod
     def match(cls, url):
-        return "lp" in url
+        #FIXME: might lead to false positives
+        return "lp:" in url
 
 
 class Customised(Hosting):
@@ -105,38 +106,6 @@ def run_cmd(command, args, cwd=getcwd()):
 #         raise Exception("Error running %s:\n\tErr: %s\n\tOut: %s\n\tExit: %s"
 #                         % (cmd,err,out,proc.returncode))
 #     return out
-
-
-class ProjectType(object):
-    build_cmd = ""
-    markers = tuple()  # empty
-
-    @classmethod
-    def detect(cls, base):
-        """Detect the kind of project and return it
-        """
-        prj_types = (PythonProject, AutoconfProject, MakefileOnly, ProjectType)
-        for p in prj_types:
-            markers = p.markers
-            if any(path.isfile(path.join(base, x)) for x in markers):
-                return p()
-
-
-class PythonProject(ProjectType):
-    build_cmd = "python setup.py develop --user"
-    markers = ('setup.py',)
-
-
-class AutoconfProject(ProjectType):
-    #TODO: there should be also a way to configure it
-    build_cmd = "./configure && make -j3"
-    markers = ('configure.in', 'configure.ac', 'Makefile.am')
-
-
-class MakefileOnly(ProjectType):
-    build_cmd = "make"
-    markers = ('Makefile', )
-
 
 class Project(object):
 
