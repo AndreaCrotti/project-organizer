@@ -8,7 +8,8 @@ Workflow:
 Some good information to show
 - last time updated
 - last time modified
-- time spent on if possible
+- time spent on the project
+- rating of the project
 - differences between original and cloned repository
 
 After the first validation we should also check if all the commands we

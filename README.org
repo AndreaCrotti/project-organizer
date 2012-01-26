@@ -10,22 +10,24 @@ general rules with many other projects.
 In case there is an original project of our personal fork, we should
 be able to see detailed diffs and statistics about it.
 
-* Git
-  We can use [[https://github.com/libgit2/pygit2][libgit2]] and its python bindings to access to git
-  repositories from git.
+* Native libraries
+  In this case we want to access directy to the internals, might be
+  faster and more powerful but the API might not be stable.
 
-* Mercurial
-  [[http://mercurial.selenic.com/wiki/MercurialApi][Official mercurial API]] to access the repository in an object
-  oriented fashion.  The official API can break compatibility at every
-  version, use [[https://bitbucket.org/haard/hgapi][HGapi]] to get a stable interface.
+** Git
+   We can use [[https://github.com/libgit2/pygit2][libgit2]] and its python bindings to access to git
+   repositories from git.
 
-* Bazaar
-  [[http://wiki.bazaar.canonical.com/BzrLib][BZrlib]]
+** Mercurial
+   [[http://mercurial.selenic.com/wiki/MercurialApi][Official mercurial API]] to access the repository in an object
+   oriented fashion.  The official API can break compatibility at every
+   version, use [[https://bitbucket.org/haard/hgapi][HGapi]] to get a stable interface.
 
-* Subversion
-  [[http://svnbook.red-bean.com/en/1.1/ch08s02.html][using the SVN api]] with some examples in Python
+** Bazaar
+   [[http://wiki.bazaar.canonical.com/BzrLib][BZrlib]]
 
-* To compile everything together we might need to use cmake
+** Subversion
+   [[http://svnbook.red-bean.com/en/1.1/ch08s02.html][using the SVN api]] with some examples in Python
 
 * Tasks
 ** TODO take from mr.developer or write from scratch some code to abstract the SCM used
