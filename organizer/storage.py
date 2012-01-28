@@ -1,3 +1,13 @@
+import logging
+from os import path
+
+
+from organizer.errors import ShellCommandFailed, NoStorageFound
+from organizer.commander import ShellCommandRunner
+
+logger = logging.getLogger(__name__)
+
+
 #TODO: see maybe if we can define the interface in a smarter way
 class Storage(object):
     """a Project declares some extra options which might come handy
@@ -95,7 +105,7 @@ class SCM(Storage):
         ShellCommandRunner(self.ex, args).run()
 
         if write:
-            self.update(self.path)
+            self.update(self.url)
 
     def create_repository(self, hosting):
         pass
