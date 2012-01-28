@@ -138,12 +138,3 @@ class Project(object):
                 sub_entry = conf_dic[sec]
                 assert 'url' in sub_entry
                 yield Project(sec, sub_entry)
-
-
-class ShellCommandFailed(Exception):
-    def __init__(self, message, retcode):
-        super(ShellCommandFailed, self).__init__(message)
-        self.retcode = retcode
-
-    def __str__(self):
-        return "Shell command failed %s: %d" % (self.message, self.retcode)
