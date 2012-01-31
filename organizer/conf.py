@@ -1,5 +1,4 @@
 from configobj import ConfigObj
-from validate import Validator
 
 
 DEFAULT_SPEC = 'projects.spec'
@@ -10,4 +9,4 @@ def load_configuration(config_file, simple):
     #TODO: rewrite the validation process
     # val = Validator()
     conf = ConfigObj(config_file, configspec=DEFAULT_SPEC)
-    return ConfParser(conf).parse(simple)
+    return conf
