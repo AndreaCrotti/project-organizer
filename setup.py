@@ -20,6 +20,7 @@ try:
 except ImportError:
     INSTALL_REQUIRES.append('configobj')
 
+# TODO: use console-entry points instead to make it more multi-platform
 setup_cfg = {
     'name': package,
     'version': version,
