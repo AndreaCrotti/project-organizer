@@ -10,6 +10,19 @@ general rules with many other projects.
 In case there is an original project of our personal fork, we should
 be able to see detailed diffs and statistics about it.
 
+* Tasks
+** TODO [#A] define exactly what is the scope of the project, or it might end up trying to be too smart
+   This tool should be mainly used for developer, to manage graphs easily
+
+** TODO take from mr.developer or write from scratch some code to abstract the SCM used
+
+** TODO define a grammar/syntax for a configuration file format
+
+** TODO write doc in RST format
+** TODO check if [[http://code.google.com/p/gerrit/][gerrit]] might be something which can be included (even if it's a Java program)
+** TODO check when sqlite was included in Python
+** TODO define a way to make it py3k compatible (possibly with the same code-base)
+
 * Native libraries
   In this case we want to access directy to the internals, might be
   faster and more powerful but the API might not be stable.
@@ -29,14 +42,6 @@ be able to see detailed diffs and statistics about it.
 ** Subversion
    [[http://svnbook.red-bean.com/en/1.1/ch08s02.html][using the SVN api]] with some examples in Python
 
-* Tasks
-** TODO take from mr.developer or write from scratch some code to abstract the SCM used
-
-** TODO define a grammar/syntax for a configuration file format
-
-** TODO write doc in RST format
-** TODO check if [[http://code.google.com/p/gerrit/][gerrit]] might be something which can be included (even if it's a Java program)
-
 * Emacs integration
   Switching to project should be done withing Emacs (calling shell
   commands) too with the following:
@@ -54,3 +59,7 @@ be able to see detailed diffs and statistics about it.
   - instead of reinventing the wheel and try to create another
     SCM-agnostic generic system, just make it very easy to create
     generic alias for commonly used operations
+  - have a way to generate graphviz graphs of the project tree in
+    SCM-agnostic way
+  - store all the statistics and the history of the work in an
+    internal database, using sqlite for example

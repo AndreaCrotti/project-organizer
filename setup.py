@@ -4,7 +4,7 @@ package = 'project_organizer'
 #TODO: get the revision number from git revparse
 version = '0.1'
 
-INSTALL_REQUIRES = []
+INSTALL_REQUIRES, OPTIONAL_REQUIRES = [], []
 
 REQUIRED_DATA = {
     'conf': ['sample.ini', 'projects.spec']
@@ -19,6 +19,13 @@ try:
     import configobj
 except ImportError:
     INSTALL_REQUIRES.append('configobj')
+
+# some other things might be optional
+try:
+    import pygraphviz
+except ImportError:
+    OPTIONAL_REQUIRES.append('pygraphviz')
+
 
 # TODO: use console-entry points instead to make it more multi-platform
 setup_cfg = {
