@@ -1,10 +1,7 @@
-#!/usr/bin/env python2
-
-import organizer.organize as org
-from organizer.conf import DEFAULT_CONF
 from cmd import Cmd
-
 from sys import exit
+
+from organizer.conf import DEFAULT_CONF
 
 # cmd version
 
@@ -25,7 +22,6 @@ class Prj(Cmd):
         exit(0)
 
 
-if __name__ == '__main__':
-    interpreter = Prj(org.load_configuration(org.DEFAULT_CONF, org.MultiProject,
-                                             org.Project))
+def loop(conf):
+    interpreter = Prj(conf)
     interpreter.cmdloop()

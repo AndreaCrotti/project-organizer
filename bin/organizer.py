@@ -3,6 +3,7 @@ import logging
 
 from organizer.conf import load_configuration, DEFAULT_CONF
 from organizer.organize import Project
+from organizer.interactive import loop
 
 LOG_LEVELS = {
     'debug': logging.DEBUG,
@@ -29,6 +30,10 @@ def parse_arguments():
     parser.add_argument('-c', '--config',
                         default=DEFAULT_CONF,
                         help='additional configuration')
+
+    parser.add_argument('-i', '--interactive'
+                        action='store_true',
+                        help='enter interactive mode')
 
     parser.add_argument('-a', '--action',
                         choices=['fetch', 'update', 'clone'],
@@ -62,3 +67,10 @@ def main():
         for key, found  in conf.items():
             print(found)
             # getattr(found, ns.action[0])()
+
+    if ns.interactive:
+        loop(conf)
+
+
+if __name__ == '__main__':
+    main()

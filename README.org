@@ -14,6 +14,8 @@ be able to see detailed diffs and statistics about it.
 ** TODO [#A] define exactly what is the scope of the project, or it might end up trying to be too smart
    This tool should be mainly used for developer, to manage graphs easily
 
+** TODO define what should be the user interface, as CLI and as cmdloop
+
 ** TODO take from mr.developer or write from scratch some code to abstract the SCM used
 
 ** TODO define a grammar/syntax for a configuration file format
