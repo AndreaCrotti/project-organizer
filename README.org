@@ -35,6 +35,7 @@ be able to see detailed diffs and statistics about it.
 ** TODO define a grammar/syntax for a configuration file format
 
 ** TODO write doc in RST format
+** TODO check if [[http://code.google.com/p/gerrit/][gerrit]] might be something which can be included (even if it's a Java program)
 
 * Emacs integration
   Switching to project should be done withing Emacs (calling shell
