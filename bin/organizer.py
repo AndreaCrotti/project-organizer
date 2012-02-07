@@ -31,7 +31,7 @@ def parse_arguments():
                         default=DEFAULT_CONF,
                         help='additional configuration')
 
-    parser.add_argument('-i', '--interactive'
+    parser.add_argument('-i', '--interactive',
                         action='store_true',
                         help='enter interactive mode')
 

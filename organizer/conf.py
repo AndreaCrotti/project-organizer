@@ -1,3 +1,7 @@
+__all__ = [
+    'load_configuration'
+]
+
 from configobj import ConfigObj
 
 
